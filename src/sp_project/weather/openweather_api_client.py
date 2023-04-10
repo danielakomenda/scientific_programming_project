@@ -57,10 +57,12 @@ class OpenWeatherClient(RequestWrapper):
 class WeatherStation(RequestWrapper):
     def __init__(self, client: OpenWeatherClient, lat: float, lon: float):
         self._client = client
-        self._coordinates = (lat, lon)
+        self.lat = lat
+        self.lon = lon
 
     async def standard_request(self, method, url, *args, **kw):
-        lat, lon = self._coordinates
+        lat = self.lat
+        lon = self.lon
         params = kw.pop("params", {})
         assert params.setdefault("lat", lat) == lat
         assert params.setdefault("lon", lon) == lon
@@ -86,15 +88,16 @@ class WeatherStation(RequestWrapper):
         assert ts.tzinfo is not None, "Naive timestamps are not supported"
         dt = int(round(ts.timestamp())) #ts.timestamp gives the UNIX-Timestamp corresponding to ts
         ret = await self.get("onecall/timemachine", params=dict(dt=dt, lang=lang, units="standard"))
-        ret["timezone_offset"] = datetime.timedelta(seconds=ret["timezone_offset"])
+        #ret["timezone_offset"] = datetime.timedelta(seconds=ret["timezone_offset"])
 
         # For all the Datapoints a matching Unit is attached
         for d in ret["data"]: # d is the complete 'data'-list-dictionary
-            for k, units in self._data_units.items(): #e.g. k is "temp" and units is 'u.K'
-                v = d.get(k) # goes in the dictionary "d" to the key "k" and gives back the value
-                if v is None:
-                    continue
-                d[k] = u.Quantity(v, units)
+            if False:
+                for k, units in self._data_units.items(): #e.g. k is "temp" and units is 'u.K'
+                    v = d.get(k) # goes in the dictionary "d" to the key "k" and gives back the value
+                    if v is None:
+                        continue
+                    d[k] = u.Quantity(v, units)
 
             # for Sunrise and Sunset, instead of Unit is a Datetime object
             for k in "dt sunrise sunset".split():
