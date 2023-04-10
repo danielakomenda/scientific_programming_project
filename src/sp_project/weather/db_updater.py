@@ -1,4 +1,6 @@
 import datetime
+import asyncio
+from turtle import up, update
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
@@ -13,6 +15,13 @@ coordinates = {
     "zurich": (47.38, 8.54),# "47.38°N 8.54°E",
     "basel": (47.56, 7.59),
 }
+
+
+
+def main():
+    end_time = datetime.datetime.now().astimezone()
+    start_time = end_time - datetime.timedelta(hours=48)
+    asyncio.run(db_update_with_new_data(coordinates, start_time, end_time))
 
 
 
@@ -77,3 +86,7 @@ async def db_update_with_new_data(location, start_time, end_time):
                 await insert_data_in_DB(weather_collection, await get_datapoints_from_OW(location, timestamp))
                 counter+=1
     print(f'Fetched {len(coordinates)} Locations and {len(timestamps_list)} Timepoints and added {counter}/{len(coordinates)*len(timestamps_list)} Elements to Database ') 
+
+if __name__ == "__main__":
+    main()
+    
