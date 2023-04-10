@@ -1,10 +1,11 @@
 import datetime
 import asyncio
-from turtle import up, update
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
 import pandas as pd
+import tqdm # for status-bar
+import anyio # for parallel-processes
 
 from sp_project.weather.openweather_api_client import OpenWeatherClient
 
@@ -12,15 +13,33 @@ from sp_project.weather.openweather_api_client import OpenWeatherClient
 api_key_ow = """***REMOVED***""".strip()
 
 coordinates = {
-    "zurich": (47.38, 8.54),# "47.38°N 8.54°E",
-    "basel": (47.56, 7.59),
+    "grid00": ( 7.10, 46.22),
+    "grid01": ( 7.66, 46.22),
+    "grid02": ( 8.79, 46.22),
+    "grid03": ( 6.53, 46.62),
+    "grid04": ( 7.10, 46.62),
+    "grid05": ( 7.66, 46.62),
+    "grid06": ( 8.23, 46.62),
+    "grid07": ( 8.79, 46.62),
+    "grid08": ( 9.36, 46.62),
+    "grid09": ( 9.92, 46.62),
+    "grid10": ( 7.10, 47.02),
+    "grid11": ( 7.66, 47.02),
+    "grid12": ( 8.23, 47.02),
+    "grid13": ( 8.79, 47.02),
+    "grid14": ( 9.36, 47.02),
+    "grid15": ( 7.10, 47.41),
+    "grid16": ( 7.66, 47.41),
+    "grid17": ( 8.23, 47.41),
+    "grid18": ( 8.79, 47.41),
+    "grid19": ( 9.36, 47.41),
 }
 
 
 
 def main():
     end_time = datetime.datetime.now().astimezone()
-    start_time = end_time - datetime.timedelta(hours=48)
+    start_time = end_time - datetime.timedelta(days=360)
     asyncio.run(db_update_with_new_data(coordinates, start_time, end_time))
 
 
@@ -37,6 +56,8 @@ async def get_datapoints_from_OW(location, dt):
             d[k] = v
         out_data.append(d)
     return out_data
+
+
 
 async def check_data_in_DB(collection, lon, lat, dt, timelimit:datetime.timedelta=datetime.timedelta(minutes=5)):
     """Checks if DB has already an entry to a specific location and datetime +/- 5 Minutes"""
@@ -64,28 +85,63 @@ async def insert_data_in_DB(collection, data:list[dict]):
             upsert=True,
         )
 
+
+
 async def db_update_with_new_data(location, start_time, end_time):
     uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
     DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
     db = DBclient.data
     weather_collection = db.weather
 
-    timestamps_list = pd.date_range(pd.Timestamp(start_time).floor("H"), end_time, freq="H")
+    timestamps_list = pd.date_range(pd.Timestamp(start_time).floor("2H"), end_time, freq="2H")
 
     counter = 0
+    limit_reached = False
+    total = len(coordinates)*len(timestamps_list)
+    pbar = tqdm.tqdm(total=total) # Progress-Bar
+    limiter = anyio.CapacityLimiter(20)
+    send_stream, receive_stream = anyio.create_memory_object_stream()
+
+    async def handle(receive_stream):
+        nonlocal counter, limit_reached
+        async with receive_stream:
+            async for location, timestamp in receive_stream:
+                if limit_reached:
+                    return
+                if not await check_data_in_DB(weather_collection, lon=location.lon, lat=location.lat, dt=timestamp):
+                    async with anyio.CancelScope(shield=True):
+                        # ignores external cancellation e.g. when another task fails, as long as the current task is ok
+                        try:
+                            result = await get_datapoints_from_OW(location, timestamp)
+                        except Exception as ex:
+                            limit_reached = True
+                            print(f'OneCallAPI reached limit at {counter=} and {timestamp=}: {ex!r}')
+                            return
+                        await insert_data_in_DB(weather_collection, result)                   
+                    counter+=1
+                pbar.update()
+
 
     async with OpenWeatherClient(
         api_key = api_key_ow,
     ) as OWclient:
-        for loc_name, loc_coord in coordinates.items():
-            location = OWclient.station_at(*loc_coord)
-            for timestamp in timestamps_list:
-                timestamp = timestamp.to_pydatetime()
-                if await check_data_in_DB(weather_collection, lon=location.lon, lat=location.lat, dt=timestamp):
-                    continue
-                await insert_data_in_DB(weather_collection, await get_datapoints_from_OW(location, timestamp))
-                counter+=1
-    print(f'Fetched {len(coordinates)} Locations and {len(timestamps_list)} Timepoints and added {counter}/{len(coordinates)*len(timestamps_list)} Elements to Database ') 
+        async with anyio.create_task_group() as tg:
+            for _ in range(20):
+                tg.start_soon(handle, receive_stream.clone())
+            receive_stream.close()
+            async with send_stream:            
+                for timestamp in reversed(timestamps_list):
+                    timestamp = timestamp.to_pydatetime()
+                    for loc_name, loc_coord in coordinates.items():
+                        location = OWclient.station_at(*loc_coord)
+                        try:
+                            await send_stream.send((location, timestamp))
+                        except (anyio.BrokenResourceError, anyio.ClosedResourceError):
+                            break
+    pbar.close()
+    print(f'Fetched {len(coordinates)} Locations and {len(timestamps_list)} Timepoints and added {counter}/{total} Elements to Database ') 
+
+
 
 if __name__ == "__main__":
     main()
