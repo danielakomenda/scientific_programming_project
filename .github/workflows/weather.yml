@@ -3,7 +3,7 @@ name: WeatherActions
 on:
   schedule:
     - cron: "23 4 * * *"
-    - cron: "37 16 * * *"
+    - cron: "50 16 * * *"
 jobs: 
   InsertWeatherDataToDB:
     runs-on: ubuntu-latest
