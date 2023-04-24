@@ -37,13 +37,6 @@ coordinates = {
 
 
 
-def main():
-    end_time = datetime.datetime.now().astimezone()
-    start_time = end_time - datetime.timedelta(days=360)
-    asyncio.run(db_update_with_new_data(coordinates, start_time, end_time))
-
-
-
 async def get_datapoints_from_OW(location, dt):
     """Collects the data from a specific location and a specific time from the OpenWeatherAPI"""
     data = await location.historic(dt)
@@ -141,6 +134,11 @@ async def db_update_with_new_data(location, start_time, end_time):
     pbar.close()
     print(f'Fetched {len(coordinates)} Locations and {len(timestamps_list)} Timepoints and added {counter}/{total} Elements to Database ') 
 
+
+def main():
+    end_time = datetime.datetime.now().astimezone()
+    start_time = end_time - datetime.timedelta(days=360)
+    asyncio.run(db_update_with_new_data(coordinates, start_time, end_time))
 
 
 if __name__ == "__main__":

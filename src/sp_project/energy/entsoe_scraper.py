@@ -1,3 +1,4 @@
+import asyncio
 import re # regular-expression
 import json
 import datetime
@@ -5,14 +6,9 @@ import datetime
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
 import httpx
-#import trio
 import bs4 # beautifulsoup
 import pandas as pd
-import matplotlib.pyplot as plt
 
-
-date = datetime.date(2022, 4, 11)
-country = "10YCH-SWISSGRIDZ!BZN"
 
 
 async def get_datapoints_from_entsoe(country, date):
@@ -102,3 +98,13 @@ async def db_update_with_new_data(country, date):
         await insert_data_in_DB(energy_collection, data)
         counter += 1
         print(counter)
+
+
+def main():
+    date = datetime.date(2022, 4, 11)
+    country = "10YCH-SWISSGRIDZ!BZN"
+    asyncio.run(db_update_with_new_data(country, date))
+
+
+if __name__ == "__main__":
+    main()
