@@ -1,4 +1,4 @@
-name: WeatherActions
+name: EntsoeActions
 
 on:
   workflow_dispatch:
