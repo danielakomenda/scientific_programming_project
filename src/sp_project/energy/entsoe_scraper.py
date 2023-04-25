@@ -101,7 +101,7 @@ async def db_update_with_new_data(country, date):
 
 
 def main():
-    date = datetime.date(2022, 4, 11)
+    date = datetime.date(2023, 4, 11)
     country = "10YCH-SWISSGRIDZ!BZN"
     asyncio.run(db_update_with_new_data(country, date))
 
