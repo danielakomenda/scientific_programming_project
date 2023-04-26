@@ -6,7 +6,7 @@ from pymongo.server_api import ServerApi
 uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
 DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
 db = DBclient.data
-collection = db.weather
+collection = db.entsoe
 
 
 db_field_projection = {
@@ -20,14 +20,13 @@ db_field_projection = {
 
 
 async def extract_energy_data_daily(collection) -> pd.DataFrame:
-    """collects the daily average of the data from the database and creates a pandas-dataframe"""
-
+    """Extract the daily average of all the data"""
     pipeline = [
     {
         '$addFields': {
             'date': {
                 '$substr': [
-                    '$Datetime', 0, 10
+                    '$datetime', 0, 10
                 ]
             }
         }
@@ -53,11 +52,11 @@ async def extract_energy_data_daily(collection) -> pd.DataFrame:
 
 
 async def extract_energy_data_raw(collection) -> pd.DataFrame:
-    """collects all the data from the database and create a pandas-dataframe"""
+    """Extract all the data"""
     
     projection={
         '_id': False,
-        'datetime': "$Datetime",
+        'datetime': "$datetime",
         **db_field_projection,
     }
 
@@ -70,3 +69,5 @@ async def extract_energy_data_raw(collection) -> pd.DataFrame:
     df["total"] = df.sum(axis="columns")
 
     return df
+
+
