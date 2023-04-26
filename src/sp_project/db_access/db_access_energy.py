@@ -1,5 +1,12 @@
 import pandas as pd
-import motor.motor_asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo.server_api import ServerApi
+
+
+uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
+DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
+db = DBclient.data
+collection = db.weather
 
 
 db_field_projection = {
@@ -12,7 +19,7 @@ db_field_projection = {
 }
 
 
-async def extract_energy_data_daily(collection: motor.motor_asyncio.AsyncIOMotorCollection) -> pd.DataFrame:
+async def extract_energy_data_daily(collection) -> pd.DataFrame:
     """collects the daily average of the data from the database and creates a pandas-dataframe"""
 
     pipeline = [
@@ -45,7 +52,7 @@ async def extract_energy_data_daily(collection: motor.motor_asyncio.AsyncIOMotor
     return df
 
 
-async def extract_energy_data_raw(collection: motor.motor_asyncio.AsyncIOMotorCollection) -> pd.DataFrame:
+async def extract_energy_data_raw(collection) -> pd.DataFrame:
     """collects all the data from the database and create a pandas-dataframe"""
     
     projection={
