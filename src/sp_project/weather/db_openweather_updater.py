@@ -36,7 +36,6 @@ coordinates = {
 }
 
 
-
 async def get_datapoints_from_OW(location, dt):
     """Collects the data from a specific location and a specific time from the OpenWeatherAPI"""
     data = await location.historic(dt)
@@ -49,7 +48,6 @@ async def get_datapoints_from_OW(location, dt):
             d[k] = v
         out_data.append(d)
     return out_data
-
 
 
 async def check_data_in_DB(collection, lon, lat, dt, timelimit:datetime.timedelta=datetime.timedelta(minutes=5)):
@@ -65,7 +63,6 @@ async def check_data_in_DB(collection, lon, lat, dt, timelimit:datetime.timedelt
     return True
 
 
-
 async def insert_data_in_DB(collection, data:list[dict]):
     for d in data:
         await collection.replace_one(
@@ -77,7 +74,6 @@ async def insert_data_in_DB(collection, data:list[dict]):
             d,
             upsert=True,
         )
-
 
 
 async def db_update_with_new_data(location, start_time, end_time):
@@ -118,9 +114,9 @@ async def db_update_with_new_data(location, start_time, end_time):
     async with OpenWeatherClient(
         api_key = api_key_ow,
     ) as OWclient:
-        async with anyio.create_task_group() as tg:
+        async with anyio.create_task_group() as task_group:
             for _ in range(20):
-                tg.start_soon(handle, receive_stream.clone())
+                task_group.start_soon(handle, receive_stream.clone())
             receive_stream.close()
             async with send_stream:            
                 for timestamp in reversed(timestamps_list):

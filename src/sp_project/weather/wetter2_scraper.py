@@ -1,6 +1,4 @@
 import asyncio
-import re # regular-expression
-import json
 import datetime
 
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -36,6 +34,7 @@ async def access_the_website(location, authority, month, day):
     return res_json
     
 
+    
 async def prepare_the_data(location, authority, month, day):
     
     res_json = await access_the_website(location, authority, month, day)
@@ -138,6 +137,8 @@ async def run_the_program(locations):
             for k,v in location_range:
                 location=k
                 authority=v
+                if location<"Yverd":
+                    continue
                 location_range.set_description(location)
 
                 # we only need the month and day of this date_range; to be sure,
@@ -174,16 +175,16 @@ locations = {
     "Appenzell,Switzerland": "162a2967db482d9de5e1db7b98c7fa5a779f2875",
     "Arosa,Switzerland": "cceff603c7d427f8ef9796064a2d06cd63a10c26",
     "Ascona,Switzerland": "e17bca46ef6ffc22a36853d5432855480cd579d2",
-    "Ayent,Switzerland": "eaf23c93ed2f83c2eae9fccfe58fedf55dfb475e",
+    #"Ayent,Switzerland": "eaf23c93ed2f83c2eae9fccfe58fedf55dfb475e",
     "Basel,Switzerland": "e502a0a8fc421e6a8f9f1c4034f6b46ff6f59f62",
     "Bellinzona,Switzerland": "f398035eff9921de0368cc494578468b1d5c99ad",
     "Bergun,Switzerland": "9748d7091a39018a7227963e7a0dde5c9bdb6713",
     "Bern,Switzerland": "94fa2a5396a4723b31142ab413d3ec1be77d62d8",
     "Biel,Switzerland": "a6d41fac1a5c23907b50d10a3c2610ffba7e63ed",
     "Brienz,Switzerland": "cd694dbb044fbf6104cff9d3d15b8a8ea4a65b79",
-    "Brissago,Switzerland": "b9868e42329b6cc5ea383fd2ba87eb4521d3c087",
+    #"Brissago,Switzerland": "b9868e42329b6cc5ea383fd2ba87eb4521d3c087",
     "Bulle,Switzerland": "b9cae3e5aed5e65e8c60067a2c357621cc009e51",
-    "Buren_An_Der_Aare,Switzerland": "8650b0008f8dbb45e77293a306f24405d32e0436",
+    #"Buren_An_Der_Aare,Switzerland": "8650b0008f8dbb45e77293a306f24405d32e0436",
     "Chur,Switzerland": "6c0da286ee836415b66b138d6f13076fbcdb3899",
     "Crans_Montana,Switzerland": "880996c8b58f8963956e2c9c30dfde90bf2279cc",
     "Davos,Switzerland": "e260b1b791f27abac6a4f7771a2401be6aee67a9",
@@ -198,14 +199,14 @@ locations = {
     "Fribourg,Switzerland": "f5240fc4fcffbe2c1680ee6f026349a7c2c0da48",
     "Geneva,Switzerland": "eacb20159164fa15c55f87d7d66068b4b2ceaf39",
     "Glarus,Switzerland": "dcb4a71fe438a4165ee26a4d370d259a2c5896d0",
-    "Goldach,Switzerland": "fdad6691a94fb10b1ab79bf70f0a6aea4432b6a6",
+    #"Goldach,Switzerland": "fdad6691a94fb10b1ab79bf70f0a6aea4432b6a6",
     "Grindelwald,Switzerland": "ab1c057337ed2fca115ed0e16b4ec2467466aaad",
     "Gryon,Switzerland": "46fa2df08f8d9f4ff8f06e367353ff78dee04f85",
-    "Gstaad,Switzerland": "4bdf8176ad1fcece5619a8429271632fdfd97112",
+    #"Gstaad,Switzerland": "4bdf8176ad1fcece5619a8429271632fdfd97112",
     "Ilanz,Switzerland": "4e7515526f98bbd07d6495d2c57936580fbabd57",
     "Interlaken,Switzerland": "79dd56d026119e05406ee521078bf148ca22d7ca",
     "Kandersteg,Switzerland": "476d318ef8a04cc3d660457f705ee35c811b9ca4",
-    "Koniz,Switzerland": "bf1e33af813d11bf1da9ded9590ebae6107dceb6",
+    #"Koniz,Switzerland": "bf1e33af813d11bf1da9ded9590ebae6107dceb6",
     "Kreuzlingen,Switzerland": "6df313894b577833016e41b126659862499eb441",
     "La_Chaux_De_Fonds,Switzerland": "d78dc7da556213f33175d58cc6d1de8534ac3a6c",
     "La_Sarraz,Switzerland": "ea650026d9bb0fcb6e5271600640bf5452cbf968",
@@ -218,19 +219,19 @@ locations = {
     "Lucerne,Switzerland": "470964fac0430b6083c52ddd3e2a400c542e0e60",
     "Lugano,Switzerland": "f9bc6e13323ac7547a608fa227ff7e274284d1f2",
     "Martigny,Switzerland": "5db7a964aacd91333598abd6c251657e68e67663",
-    "Meisterschwanden,Switzerland": "d0537b1d4b8ac9c3936a3b05ff73e719e20f9137",
+    #"Meisterschwanden,Switzerland": "d0537b1d4b8ac9c3936a3b05ff73e719e20f9137",
     "Melide,Switzerland": "fe52462ca74ec5a9ec29bb4fff7e534b653a0902",
     "Montreux,Switzerland": "0034c59b5b977acd17fe5837e5845ae9f41e5a09",
     "Murren,Switzerland": "49112aabb5de822694504ee63c3a2e87a290e815",
     "Murten,Switzerland": "6eb04bd95e05c180215293c5aaaa2cf5743c1c5b",
     "Nendaz,Switzerland": "91ebe8de8fcbcd36d45877be09019bd31414d1bc",
     "Neuchatel,Switzerland": "684590561854da6d27a36d9e659cc4739f675b1c",
-    "Oberhelfenschwil,Switzerland": "4e2e7eb09c39fbf0df04694b35aa99f364ac317d",
+    #"Oberhelfenschwil,Switzerland": "4e2e7eb09c39fbf0df04694b35aa99f364ac317d",
     "Orselina,Switzerland": "7e8862320a0714b3c7ee0201dea67f3d88ad349f",
     "Payerne,Switzerland": "e1a073c91cf80e72b3535b2d1b274ec274f1a3e3",
     "Piazzogna,Switzerland": "3b72a854add1c56cbc7ed93321cf4d4a1061d399",
     "Pontresina,Switzerland": "e8f8d4d08d7cd2a4121fc88d0030d26fd98300de",
-    "Porrentruy,Switzerland": "00e2013c03f5508c05f97aa69555d1c17d5cd81d",
+    #"Porrentruy,Switzerland": "00e2013c03f5508c05f97aa69555d1c17d5cd81d",
     "Poschiavo,Switzerland": "cc861a51e98cea87f7cd71b735baa9afd571a8c1",
     "Rapperswil,Switzerland": "e296f4a4b599b329b9472c1a785c634631ca1006",
     "Romanshorn,Switzerland": "39fe927062dc9f07e6b3abed0189caf29b9745fd",
@@ -250,17 +251,25 @@ locations = {
     "Tenero,Switzerland": "cb4313847fec5d64e08e0549340a914da569db0f",
     "Thun,Switzerland": "4e567234358d307fb77c5cb5514150df3cd59a3c",
     "Trient,Switzerland": "4129b87c07a38beede842f89d10f363648f6089c",
-    "Uster,Switzerland": "7e990ad1487f526fb6be985b43bdd1d50b06336c",
+    #"Uster,Switzerland": "7e990ad1487f526fb6be985b43bdd1d50b06336c",
     "Verbier,Switzerland": "d9ab4f99f16929d6a5dea4a9b3f20d60af8dd3f9",
     "Vernier,Switzerland": "1053dba5793f4bf4b161c735517f1872816de64e",
     "Vevey,Switzerland": "19283b9186e4a90e95159fa3c857e78aae5eef6d",
     "Veysonnaz,Switzerland": "24f637145c5606fb31e88a5f72dc7a89cb3a7b49",
     "Visp,Switzerland": "783420cf10c47747d87a98078efc15ee7924ce07",
     "Wengen,Switzerland": "bfd1bd4f3fdc83872749b9b33f9fe9f87added62",
-    "Wildhaus,Switzerland": "dcee4105848e23dff73e4260554d653096547140",
+    #"Wildhaus,Switzerland": "dcee4105848e23dff73e4260554d653096547140",
     "Winterthur,Switzerland": "0653a595aa782c15a960e2850b10b76f86f5939e",
-    "Yverdon,Switzerland": "42e5e747472654a826fd5ab96ff05d194002d7b1",
+    #"Yverdon,Switzerland": "42e5e747472654a826fd5ab96ff05d194002d7b1",
     "Zermatt,Switzerland": "b165a59a6f441aa227744995430abf0d32530c3b",
     "Zweisimmen,Switzerland" : "94d9af7f3f88b1f06e944301ae4b886ccf7b12dd",
     "Zurich,Switzerland" : "be1ac363913afba07be684e70dcbb7b7dcfd2ba1",
 }
+
+
+def main():
+    asyncio.run(run_the_program(locations))
+
+
+if __name__ == "__main__":
+    main()

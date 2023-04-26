@@ -45,7 +45,6 @@ async def extract_energy_data_daily(collection: motor.motor_asyncio.AsyncIOMotor
     return df
 
 
-
 async def extract_energy_data_raw(collection: motor.motor_asyncio.AsyncIOMotorCollection) -> pd.DataFrame:
     """collects all the data from the database and create a pandas-dataframe"""
     
