@@ -8,7 +8,7 @@ from pymongo.server_api import ServerApi
 import httpx
 import bs4 # beautifulsoup
 import pandas as pd
-import tqdm.notebook
+import tqdm
 import anyio
 
 
@@ -41,13 +41,9 @@ async def get_datapoints_from_entsoe(country, date):
     content_params = {k.strip():v.strip() for k,v in (l.split("=") for l in content_type[1:])}
     content_type = content_type[0]
     
-    if False:
-        # make sure the content is UTF-8 and parse the content with bs4
-        assert res.headers["content-type"] == "text/html;charset=UTF-8", res.headers["content-type"]
-        soup = bs4.BeautifulSoup(res.content.decode("utf-8"))
-    else:
-        assert content_type == "text/html", res.headers["content-type"]
-        soup = bs4.BeautifulSoup(res.content.decode(content_params["charset"]))
+    # makes sure, the respons is an html-document
+    assert content_type == "text/html", res.headers["content-type"]
+    soup = bs4.BeautifulSoup(res.content.decode(content_params["charset"]))
 
     # select only the part 'script' and the chart-list of the http-file
     javascript_str = soup.find("script").text
@@ -128,7 +124,7 @@ async def run_the_program(country):
         
         async with send_stream:
             date_range = tqdm.notebook.tqdm(
-                pd.date_range("2022-01-01","2023-04-22",freq="D"),
+                pd.date_range("2022-01-01","2023-04-25",freq="D"),
                 leave=False,
             )
 

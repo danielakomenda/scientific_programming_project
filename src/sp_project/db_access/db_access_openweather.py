@@ -9,7 +9,7 @@ db = DBclient.data
 collection = db.openweather
 
 
-async def extract_heatingdemand(collection) -> pd.DataFrame:
+async def extract_heatingdemand(collection=db.openweather) -> pd.DataFrame:
     """Extract the daily average of the negative deviation of 14°C = 288°K"""
     pipeline = [
         {
@@ -56,12 +56,11 @@ async def extract_heatingdemand(collection) -> pd.DataFrame:
     df = df.set_index("_id")
     df = df.set_index(pd.to_datetime(df.index).tz_localize("UTC").rename("date"))
     df = df.sort_index()
-    df["total"] = df.sum(axis="columns")
     
     return df
 
 
-async def extract_avgtemp(collection) -> pd.DataFrame:
+async def extract_avgtemp(collection=db.openweather) -> pd.DataFrame:
     """Extract the daily average, maximum and minimum of the temperature"""
     pipeline = [
         {
@@ -96,12 +95,11 @@ async def extract_avgtemp(collection) -> pd.DataFrame:
     df = df.set_index("_id")
     df = df.set_index(pd.to_datetime(df.index).tz_localize("UTC").rename("date"))
     df = df.sort_index()
-    df["total"] = df.sum(axis="columns")
     
     return df
 
 
-async def extract_windpower(collection) -> pd.DataFrame:
+async def extract_windpower(collection=db.openweather) -> pd.DataFrame:
     """Extract the daily average of wind-speed**2, which is the equivalent of wind-power"""
     pipeline = [
         {
@@ -149,6 +147,5 @@ async def extract_windpower(collection) -> pd.DataFrame:
     df = df.set_index("_id")
     df = df.set_index(pd.to_datetime(df.index).tz_localize("UTC").rename("date"))
     df = df.sort_index()
-    df["total"] = df.sum(axis="columns")
     
     return df

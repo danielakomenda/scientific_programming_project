@@ -44,19 +44,19 @@ class OpenWeatherClient:
 
 
     # Defines the weatherstation with the coordinates as parameters
-    def station_at(self, lat, lon):
-        return WeatherStation(self, lat, lon)
+    def station_at(self, lon, lat):
+        return WeatherStation(self, lon, lat)
 
 
 
 class WeatherStation:
     """Handels a specific location defined by latitude and longitude"""
 
-    def __init__(self, client: OpenWeatherClient, lat: float, lon: float):
+    def __init__(self, client: OpenWeatherClient, lon: float, lat: float):
         """Constructor"""
         self._client = client
-        self.lat = lat
         self.lon = lon
+        self.lat = lat
 
 
     async def historic(self, ts: datetime.datetime, lang: str = "en"):
@@ -68,8 +68,8 @@ class WeatherStation:
                 dt=dt, 
                 lang=lang, 
                 units="standard",
-                lat=self.lat,
                 lon=self.lon,
+                lat=self.lat,
             ),
         )
         ret.raise_for_status() # turns http-Errors into exceptions

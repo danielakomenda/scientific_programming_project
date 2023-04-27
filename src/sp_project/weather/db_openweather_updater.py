@@ -80,7 +80,7 @@ async def db_update_with_new_data(location, start_time, end_time):
     uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
     DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
     db = DBclient.data
-    weather_collection = db.weather
+    weather_collection = db.openweather
 
     timestamps_list = pd.date_range(pd.Timestamp(start_time).floor("2H"), end_time, freq="2H")
 
@@ -133,7 +133,7 @@ async def db_update_with_new_data(location, start_time, end_time):
 
 def main():
     end_time = datetime.datetime.now().astimezone()
-    start_time = end_time - datetime.timedelta(days=360)
+    start_time = end_time - datetime.timedelta(days=3)
     asyncio.run(db_update_with_new_data(coordinates, start_time, end_time))
 
 
