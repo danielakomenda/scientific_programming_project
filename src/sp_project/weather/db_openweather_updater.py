@@ -7,7 +7,7 @@ import pandas as pd
 import tqdm # for status-bar
 import anyio # for parallel-processes
 
-from sp_project.weather.openweather_api_client import OpenWeatherClient
+import sp_project.weather.openweather_api_client as ow_client
 
 
 api_key_ow = """***REMOVED***""".strip()
@@ -76,7 +76,7 @@ async def insert_data_in_DB(collection, data:list[dict]):
         )
 
 
-async def db_update_with_new_data(location, start_time, end_time):
+async def run_the_program(location, start_time, end_time):
     uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
     DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
     db = DBclient.data
@@ -111,7 +111,7 @@ async def db_update_with_new_data(location, start_time, end_time):
                 pbar.update()
 
 
-    async with OpenWeatherClient(
+    async with ow_client.OpenWeatherClient(
         api_key = api_key_ow,
     ) as OWclient:
         async with anyio.create_task_group() as task_group:
@@ -134,7 +134,7 @@ async def db_update_with_new_data(location, start_time, end_time):
 def main():
     end_time = datetime.datetime.now().astimezone()
     start_time = end_time - datetime.timedelta(days=3)
-    asyncio.run(db_update_with_new_data(coordinates, start_time, end_time))
+    asyncio.run(run_the_program(coordinates, start_time, end_time))
 
 
 if __name__ == "__main__":

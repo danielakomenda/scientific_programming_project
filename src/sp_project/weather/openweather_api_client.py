@@ -45,7 +45,7 @@ class OpenWeatherClient:
 
     # Defines the weatherstation with the coordinates as parameters
     def station_at(self, lon, lat):
-        return WeatherStation(self, lon, lat)
+        return WeatherStation(self, lon=lon, lat=lat)
 
 
 
