@@ -107,7 +107,7 @@ async def handle_run_the_program(receive_stream, collection):
                 raise
 
 
-async def run_the_program(country):
+async def run_the_program(country, start, end):
     
     uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
     DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
@@ -127,8 +127,8 @@ async def run_the_program(country):
         receive_stream.close()
         
         async with send_stream:
-            date_range = tqdm.tqdm_notebook(
-                pd.date_range("2021-04-07","2023-04-25",freq="D"),
+            date_range = tqdm.tqdm(
+                pd.date_range(start,end,freq="D"),
                 leave=False,
             )
 
@@ -137,9 +137,34 @@ async def run_the_program(country):
                 await send_stream.send((country, base_date))
 
 
+async def run_the_program_unparallel(country, start, end):
+    uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
+    DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
+    db = DBclient.data
+    collection = db.entsoe
+    
+    date_range = tqdm.tqdm(
+        pd.date_range(start,end,freq="D"),
+        leave=False,
+    )
+    
+    for base_date in date_range:
+        try:
+            date_range.set_description(f"{base_date:%y-%m-%d}")
+            data = await get_datapoints_from_entsoe(country, base_date)
+            await insert_data_in_DB(collection, data)
+
+        except Exception as ex:
+            print(f"{country} / {base_date:%y-%m-%d} failed: {ex!r}")
+            raise
+
+
+
 def main():
     country = "10YCH-SWISSGRIDZ"
-    asyncio.run(run_the_program(country))
+    end_time = datetime.datetime.now().astimezone()
+    start_time = end_time - datetime.timedelta(days=3)
+    asyncio.run(run_the_program_unparallel(country, start=start_time, end=end_time))
 
 
 if __name__ == "__main__":
