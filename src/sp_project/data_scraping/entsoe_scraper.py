@@ -12,6 +12,7 @@ import tqdm
 import anyio
 
 
+
 async def get_datapoints_from_entsoe(country, date):
     """get-Request to the entsoe.eu-page to get all 'Generation per Type'-Data"""
     
@@ -107,13 +108,8 @@ async def handle_run_the_program(receive_stream, collection):
                 raise
 
 
-async def run_the_program(country, start, end):
-    
-    uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
-    DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
-    db = DBclient.data
-    collection = db.entsoe
-    
+async def run_the_program(collection, country, start, end):
+        
     send_stream, receive_stream = anyio.create_memory_object_stream()
 
     async with anyio.create_task_group() as task_group:
@@ -137,11 +133,7 @@ async def run_the_program(country, start, end):
                 await send_stream.send((country, base_date))
 
 
-async def run_the_program_unparallel(country, start, end):
-    uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
-    DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
-    db = DBclient.data
-    collection = db.entsoe
+async def run_the_program_unparallel(collection, country, start, end):
     
     date_range = tqdm.tqdm(
         pd.date_range(start,end,freq="D"),
@@ -159,12 +151,17 @@ async def run_the_program_unparallel(country, start, end):
             raise
 
 
-
 def main():
+    uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
+    DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
+    db = DBclient.data
+    collection = db.entsoe
+    
     country = "10YCH-SWISSGRIDZ"
     end_time = datetime.datetime.now().astimezone()
     start_time = end_time - datetime.timedelta(days=3)
-    asyncio.run(run_the_program_unparallel(country, start=start_time, end=end_time))
+
+    asyncio.run(run_the_program_unparallel(collection=collection, country=country, start=start_time, end=end_time))
 
 
 if __name__ == "__main__":

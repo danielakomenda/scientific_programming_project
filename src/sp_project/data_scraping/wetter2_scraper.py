@@ -33,8 +33,7 @@ async def access_the_website(location, authority, month, day):
     
     return res_json
     
-
-    
+  
 async def prepare_the_data(location, authority, month, day):
     
     res_json = await access_the_website(location, authority, month, day)
@@ -112,15 +111,9 @@ async def insert_data_in_DB(collection, data):
         )
 
         
-async def run_the_program(locations):
-    
-    uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
-    DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
-    db = DBclient.data
-    wetter2_collection = db.wetter2
+async def run_the_program(collection, locations):
     
     send_stream, receive_stream = anyio.create_memory_object_stream()
-    
     location_range = tqdm.notebook.tqdm(locations.items())
 
     async with anyio.create_task_group() as task_group:
@@ -129,7 +122,7 @@ async def run_the_program(locations):
             task_group.start_soon(
                 handle_run_the_program, 
                 receive_stream.clone(),
-                wetter2_collection
+                collection
             )
         receive_stream.close()
         async with send_stream:            
@@ -265,8 +258,13 @@ locations = {
 }
 
 
-def main():
-    asyncio.run(run_the_program(locations))
+def main():      
+    uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
+    DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
+    db = DBclient.data
+    collection = db.wetter2
+
+    asyncio.run(run_the_program(collection=collection, locations=locations))
 
 
 if __name__ == "__main__":

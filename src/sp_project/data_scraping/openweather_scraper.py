@@ -7,7 +7,7 @@ import pandas as pd
 import tqdm # for status-bar
 import anyio # for parallel-processes
 
-import sp_project.weather.openweather_api_client as ow_client
+import sp_project.data_scraping.openweather_api_client as ow_client
 
 
 api_key_ow = """***REMOVED***""".strip()
@@ -135,6 +135,7 @@ def main():
     
     end_time = datetime.datetime.now().astimezone()
     start_time = end_time - datetime.timedelta(days=365)
+
     asyncio.run(run_the_program(collection=collection, location=coordinates, start_time=start_time, end_time=end_time))
 
 
