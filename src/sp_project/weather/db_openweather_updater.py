@@ -133,7 +133,7 @@ async def run_the_program(location, start_time, end_time):
 
 def main():
     end_time = datetime.datetime.now().astimezone()
-    start_time = end_time - datetime.timedelta(days=3)
+    start_time = end_time - datetime.timedelta(days=365)
     asyncio.run(run_the_program(coordinates, start_time, end_time))
 
 

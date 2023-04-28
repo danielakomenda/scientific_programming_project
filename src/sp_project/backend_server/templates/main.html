@@ -1,4 +1,23 @@
-<main>
-    <h1>Hello World</h1>
-    <div id="plots"></div>
-</main>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    {{ resources }}
+</head>
+<body>
+    <main>
+        <h1>Hello World</h1>
+        <div id="plots"></div>
+    </main>    
+
+
+    <script type="module">
+        const response = await fetch('/plot')
+        const item = await response.json()
+        Bokeh.embed.embed_item(item, "plots")
+    </script>
+</body>
+</html>
+
+
