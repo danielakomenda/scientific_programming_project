@@ -19,7 +19,7 @@ db_field_projection = {
 }
 
 
-async def extract_energy_data_daily(collection=db.entsoe) -> pd.DataFrame:
+async def extract_energy_data_daily(collection=collection) -> pd.DataFrame:
     """Extract the daily average of all the data"""
     pipeline = [
     {
@@ -51,7 +51,7 @@ async def extract_energy_data_daily(collection=db.entsoe) -> pd.DataFrame:
     return df
 
 
-async def extract_energy_data_raw(collection=db.entsoe) -> pd.DataFrame:
+async def extract_energy_data_raw(collection=collection) -> pd.DataFrame:
     """Extract all the data"""
     
     projection={

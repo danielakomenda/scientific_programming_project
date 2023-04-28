@@ -76,11 +76,7 @@ async def insert_data_in_DB(collection, data:list[dict]):
         )
 
 
-async def run_the_program(location, start_time, end_time):
-    uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
-    DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
-    db = DBclient.data
-    weather_collection = db.openweather
+async def run_the_program(collection, location, start_time, end_time):
 
     timestamps_list = pd.date_range(pd.Timestamp(start_time).floor("2H"), end_time, freq="2H")
 
@@ -97,7 +93,7 @@ async def run_the_program(location, start_time, end_time):
             async for location, timestamp in receive_stream:
                 if limit_reached:
                     return
-                if not await check_data_in_DB(weather_collection, lon=location.lon, lat=location.lat, dt=timestamp):
+                if not await check_data_in_DB(collection, lon=location.lon, lat=location.lat, dt=timestamp):
                     async with anyio.CancelScope(shield=True):
                         # ignores external cancellation e.g. when another task fails, as long as the current task is ok
                         try:
@@ -106,7 +102,7 @@ async def run_the_program(location, start_time, end_time):
                             limit_reached = True
                             print(f'OneCallAPI reached limit at {counter=} and {timestamp=}: {ex!r}')
                             return
-                        await insert_data_in_DB(weather_collection, result)                   
+                        await insert_data_in_DB(collection, result)                   
                     counter+=1
                 pbar.update()
 
@@ -132,9 +128,14 @@ async def run_the_program(location, start_time, end_time):
 
 
 def main():
+    uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
+    DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
+    db = DBclient.data
+    collection = db.openweather
+    
     end_time = datetime.datetime.now().astimezone()
     start_time = end_time - datetime.timedelta(days=365)
-    asyncio.run(run_the_program(coordinates, start_time, end_time))
+    asyncio.run(run_the_program(collection=collection, location=coordinates, start_time=start_time, end_time=end_time))
 
 
 if __name__ == "__main__":

@@ -137,8 +137,6 @@ async def run_the_program(locations):
             for k,v in location_range:
                 location=k
                 authority=v
-                if location<"Yverd":
-                    continue
                 location_range.set_description(location)
 
                 # we only need the month and day of this date_range; to be sure,
