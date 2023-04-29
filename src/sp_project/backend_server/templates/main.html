@@ -4,7 +4,17 @@
     <meta charset="UTF-8">
     <title>Document</title>
     {{ resources }}
-    <script src="scripts/navigation.js"></script>
+    <script src="{{ url_for('static', filename='scripts/navigation.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+
+    <script src="../static/scripts/navigation.js"></script>
+    <link rel="stylesheet" href="../static/styles/style.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Bootstrap JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </head>
 <body>
     <script>
@@ -15,16 +25,37 @@
 
     <main>
 
-        <h1>Hello World</h1>
-        <div id="plots"></div>
-
+        <div class="container">
+            <div class="title">Welcome to our Web-Application</div>
+            <div class="row">
+                <div class="col-12 col-sm-12">
+                    <p class="info-text">
+                    As part of our scientific programming module, our team completed a Python project that involved collecting and analyzing real-life weather and energy-generation data in Switzerland. 
+                    We aimed to understand the relationship between energy-generation and weather, with the ultimate goal of predicting future energy-generation based on weather predictions.
+                    </p>
+                    <p class="info-text">To facilitate our analysis, we made several key assumptions.</p>   
+                    <ul> 
+                    <li class="info-text">Energy is only generated based to the energy-consumption, since most energy sources are difficult to store</li>
+                    <li class="info-text">Nuclear energy is more or less the same during the years, because it is difficult to switch off the nuclear power plants</li>
+                    <li class="info-text">Sustainable energy, such es wind-, solar- and river-water-energy is preferred when there is enough energy-source</li>
+                    </ul>
+                
+                <p class="info-text">
+                    In the navigation-bar, you can find graphics and interpretation about weather and energy-generation as well as a prediction fo future energy-generation based on the weather-prediction.
+                    In the tab "Extras", you can find something fun, that has nothing to do with the rest of the Project.
+                    </p>
+                </div>
+            </div>
+        </div>
     </main>    
 
+    <footer class="footer">
+        <div class="footer-text fat">Scientific Programming Project</div>
+        <div class="footer-text">Group: Daniela Komenda, Flavio Gottardo, Kevin Thiruchelvam</div>
+    </footer>
 
 
-
-
-    <script type="module">
+   <script type="module">
         const response = await fetch('/plot')
         const item = await response.json()
         Bokeh.embed.embed_item(item, "plots")

@@ -6,7 +6,7 @@ from pymongo.server_api import ServerApi
 import httpx
 import bs4 # beautifulsoup
 import pandas as pd
-import tqdm.notebook
+import tqdm
 import anyio
 
 
@@ -114,7 +114,7 @@ async def insert_data_in_DB(collection, data):
 async def run_the_program(collection, locations):
     
     send_stream, receive_stream = anyio.create_memory_object_stream()
-    location_range = tqdm.notebook.tqdm(locations.items())
+    location_range = tqdm.tqdm(locations.items())
 
     async with anyio.create_task_group() as task_group:
         

@@ -1,8 +1,8 @@
 function generateNavbar() {
     setActiveNavbarItem()
     const nav = document.createElement('nav');
-    nav.className = "navbar navbar-expand-sm navbar-light";
-    nav.style.backgroundColor = "#e3f2fd";
+    nav.className = "navi navbar navbar-expand-sm";
+    nav.style.backgroundColor ="";
     nav.innerHTML = `
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -17,9 +17,6 @@ function generateNavbar() {
           </li>
           <li class="nav-item">
             <a class="nav-link" href="energy.html">Energy</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="model.html">Model</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="prediction.html">Prediction</a>
