@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
+    {{ resources }}
+    <script src="scripts/navigation.js"></script>
 </head>
 <body>
+    <script>
+        generateNavbar();
+        setActiveNavbarItem()
+    </script>
     <main>
-        <h1>Hello World</h1>
-        <div id="plots"></div>
-    </main>    
+        <h1>Weather</h1>
+        <div id="weather-plot-1"></div>
+    </main>   
+    
+    
+    <script type="module">
+        const response = await fetch('/plot')
+        const item = await response.json()
+        Bokeh.embed.embed_item(item, "plots")
+    </script>
 </body>
 </html>
