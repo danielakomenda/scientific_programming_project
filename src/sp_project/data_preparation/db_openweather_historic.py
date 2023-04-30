@@ -2,15 +2,13 @@ import pandas as pd
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
 
-
-uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
-DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
-db = DBclient.data
-collection = db.openweather
+from .db_client import get_global_db_client
 
 
-async def extract_data_daily(collection=collection) -> pd.DataFrame:
+
+async def extract_data_daily() -> pd.DataFrame:
     """Extract the daily averages of all the interesting datapoints including hours of daylight"""
+    collection = get_global_db_client().openweather
     pipeline = [
         {
             '$addFields': {
@@ -67,8 +65,9 @@ async def extract_data_daily(collection=collection) -> pd.DataFrame:
     return df
 
 
-async def extract_heatingdemand(collection=collection) -> pd.DataFrame:
+async def extract_heatingdemand() -> pd.DataFrame:
     """Extract the daily average of the negative deviation of 14°C = 288°K"""
+    collection = get_global_db_client().openweather
     cursor = collection.aggregate([
     {
         '$addFields': {
@@ -125,8 +124,9 @@ async def extract_heatingdemand(collection=collection) -> pd.DataFrame:
     return df
 
 
-async def extract_windpower(collection=collection) -> pd.DataFrame:
+async def extract_windpower() -> pd.DataFrame:
     """Extract the daily average of wind-speed**2, which is the equivalent of wind-power"""
+    collection = get_global_db_client().openweather
     pipeline = [
         {
             '$addFields': {

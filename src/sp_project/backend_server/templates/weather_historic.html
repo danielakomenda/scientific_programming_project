@@ -21,31 +21,38 @@
         generateNavbar();
         setActiveNavbarItem()
     </script>
-    
-    <main>
-        <div class="container">
-            <div class="title">Prediction</div>
-            <div class="row">
-                <div class="col-12 col-sm-12 center framed" id="predicition-plot1">
-                    Plot
-                </div>
 
+<main>
+    <div class="container">
+        <div class="title">Historic Energy-Generation</div>
+        <div class="row">
+            <div class="col-12 col-sm-12">
+                <p class="info-text">
+                On this page you can find the historic Energy-Generation for the different Energy-Types.
+                You can choose if you want them to be displayed as time-plot, bar-plot, pie-chart or as a table.
+                </p>
             </div>
-            <div class="row">
-                <div class="col-12 col-sm-6 box">
-                    Feld1
-                </div>
-                <div class="col-12 col-sm-6 box">
-                    Feld2        
-                </div>
+        <div class="row">
+            <div class="col-12 col-sm-12 center framed" id="energy-plot1">
+                Plot
             </div>
-    </container>
-    </main>    
+
+        </div>
+        <div class="row">
+            <div class="col-12 col-sm-6 box">
+                Feld1
+            </div>
+            <div class="col-12 col-sm-6 box">
+                Feld2        
+            </div>
+        </div>
+</container>
+</main>
 
     <footer class="footer">
         <div class="footer-text fat">Scientific Programming Project</div>
         <div class="footer-text">Group: Daniela Komenda, Flavio Gottardo, Kevin Thiruchelvam</div>
-    </footer>
+    </footer> 
     
     
     <script type="module">
@@ -53,5 +60,7 @@
         const item = await response.json()
         Bokeh.embed.embed_item(item, "plots")
     </script>
+
+
 </body>
 </html>

@@ -13,13 +13,16 @@ function generateNavbar() {
             <a class="nav-link" href="main.html">Main</a>
          </li>
           <li class="nav-item">
-            <a class="nav-link" href="weather.html">Weather</a>
+            <a class="nav-link" href="weather_historic.html">Historic Weather</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="energy.html">Energy</a>
+          <a class="nav-link" href="weather_prediction.html">Weather Prediction</a>
+        </li>
+          <li class="nav-item">
+            <a class="nav-link" href="energy_historic.html">Historic Energy-Generation</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="prediction.html">Prediction</a>
+            <a class="nav-link" href="energy_model_prediction.html">Energy-Generation Prediction</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="extra.html">Extra</a>  
