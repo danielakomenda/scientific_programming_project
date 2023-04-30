@@ -261,6 +261,12 @@ locations = {
     "Zurich,Switzerland" : "be1ac363913afba07be684e70dcbb7b7dcfd2ba1",
 }
 
+test = {
+    "Zermatt,Switzerland": "b165a59a6f441aa227744995430abf0d32530c3b",
+    "Zweisimmen,Switzerland" : "94d9af7f3f88b1f06e944301ae4b886ccf7b12dd",
+    "Zurich,Switzerland" : "be1ac363913afba07be684e70dcbb7b7dcfd2ba1",
+}
+
 
 def main():
 
@@ -274,7 +280,7 @@ def main():
     year = end_date.year
     print ()
     
-    asyncio.run(run_the_program(collection=collection, locations=locations, start_date=start_date, end_date=end_date))
+    asyncio.run(run_the_program(collection=collection, locations=test, year=year, start_date=start_date, end_date=end_date))
 
 
 if __name__ == "__main__":
