@@ -119,7 +119,7 @@ async def run_the_program(collection, locations, year, start_date, end_date):
         
     send_stream, receive_stream = anyio.create_memory_object_stream()
     
-    location_range = tqdm.notebook.tqdm(locations.items())
+    location_range = tqdm.tqdm(locations.items())
 
     async with anyio.create_task_group() as task_group:
         
@@ -138,7 +138,7 @@ async def run_the_program(collection, locations, year, start_date, end_date):
                 location_range.set_description(location)
 
                 # we only need the month and day of this date_range;
-                date_range = tqdm.notebook.tqdm(
+                date_range = tqdm.tqdm(
                     pd.date_range(start_date,end_date,freq="D"),
                     leave=False,
                 )
