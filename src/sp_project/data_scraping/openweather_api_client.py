@@ -7,7 +7,8 @@ class OpenWeatherClient:
     """Handles the OpenWeather-Request"""
 
     def __init__(self, api_key: str, api_url: str="https://api.openweathermap.org/data/3.0"):
-        """Instantiate the class; it takes the parameters api_url and api_key"""
+        """Instantiate the class; it takes the parameters api_url and api_key.
+        api_url has already a default-value, so it only needs the api_key."""
 
         # Instantiate a new httpx-AsyncClient and tells server to send JSON-File back
         self._client = httpx.AsyncClient(
@@ -31,7 +32,7 @@ class OpenWeatherClient:
 
 
     async def standard_request(self, method, url, *args, **kw):
-        """handels the usual type of request with api_key and standard response"""
+        """handels the usual type of request"""
 
         params = kw.pop("params", {}) #
         assert params.setdefault("appid", self._api_key) == self._api_key # raises exception if the api_key isn't correct
@@ -44,12 +45,16 @@ class OpenWeatherClient:
 
 
     # Defines the weatherstation with the coordinates as parameters
-    def station_at(self, lon, lat):
-        return WeatherStation(self, lon=lon, lat=lat)
+    def historic_station_at(self, lon, lat):
+        return HistoricWeatherStation(self, lon=lon, lat=lat)
+    
+
+    def prediction_station_at(self, lon, lat):
+        return PredictionWeatherStation(self, lon=lon, lat=lat)
 
 
 
-class WeatherStation:
+class HistoricWeatherStation:
     """Handels a specific location defined by latitude and longitude"""
 
     def __init__(self, client: OpenWeatherClient, lon: float, lat: float):
@@ -77,10 +82,63 @@ class WeatherStation:
 
         # For all the Datapoints a matching Unit is attached
         for d in ret["data"]: # d is the complete 'data'-list-dictionary
-            # for Sunrise and Sunset we convert the ISO-String to a Datetime object
+        # We convert the UNIX-Timestamp(seconds since 1970-01-01) to a Datetime object"""
             for k in "dt sunrise sunset".split():
                 v = d.get(k)
                 if v is None:
                     continue
                 d[k] = datetime.datetime.utcfromtimestamp(v).replace(tzinfo=datetime.timezone.utc)
         return ret
+
+
+
+class PredictionWeatherStation:
+    """Handels a specific location defined by latitude and longitude"""
+
+    def __init__(self, client: OpenWeatherClient, lon: float, lat: float):
+        """Constructor"""
+        self._client = client
+        self.lon = lon
+        self.lat = lat
+
+
+    async def prediction(self, lang: str = "en"):
+        ret = await self._client._client.get(
+            "onecall", 
+            params=dict(
+                exclude=["alert"],
+                lang=lang, 
+                units="standard",
+                lon=self.lon,
+                lat=self.lat,
+            ),
+        )
+        ret.raise_for_status() # turns http-Errors into exceptions
+        ret = ret.json() # if there is no Error, the response is a json-document
+
+
+        def convert_timestamps(d:dict, keys:list[str]):
+            """We convert the UNIX-Timestamp(seconds since 1970-01-01) to a Datetime object"""
+            for k in keys:
+                v = d.get(k)
+                if v is None:
+                    continue
+                d[k] = datetime.datetime.utcfromtimestamp(v).replace(tzinfo=datetime.timezone.utc)
+
+
+        # For all the Datapoints a matching Unit is attached
+        for d in ret["daily"]: # d is the complete 'data'-list-dictionary
+            convert_timestamps(d, "dt sunrise sunset moonrise moonset".split())
+            # split() splits the string and converts it to a list.
+
+        for d in ret["minutely"]: # d is the complete 'data'-list-dictionary
+            convert_timestamps(d, ["dt"])
+
+        for d in ret["hourly"]: # d is the complete 'data'-list-dictionary
+            convert_timestamps(d, ["dt"])
+        
+        convert_timestamps(ret["current"], "dt sunrise sunset".split())
+        
+        return ret
+    
+
