@@ -1,53 +1,44 @@
 import pandas as pd
-from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo.server_api import ServerApi
 
 from .db_client import get_global_db_client
 
 
 
 async def extract_data_daily() -> pd.DataFrame:
-    """Extract the daily averages of all the interesting datapoints including hours of daylight"""
+    """Extract the daily averages of all the interesting datapoints"""
+    
     collection = get_global_db_client().wetter2
+    
     pipeline = [
         {
             '$addFields': {
                 'date': {
                     '$substr': [
-                        '$dt', 0, 10
+                        '$datetime', 0, 10
                     ]
-                }, 
-                'sunhours': {
-                    '$dateDiff': {
-                        'startDate': '$sunrise', 
-                        'endDate': '$sunset', 
-                        'unit': 'minute'
-                    }
                 }
             }
-        }, {
+        }, 
+        {
             '$group': {
                 '_id': '$date', 
-                'sunhours': {
-                    '$avg': '$sunhours'
-                }, 
                 'avg_temp': {
-                    '$avg': '$temp'
+                    '$avg': '$temp_C'
                 }, 
                 'min_temp': {
-                    '$min': '$temp'
+                    '$min': '$temp_C'
                 }, 
                 'max_temp': {
-                    '$max': '$temp'
+                    '$max': '$temp_C'
                 }, 
-                'uvi': {
-                    '$avg': '$uvi'
+                'rain': {
+                    '$avg': '$rain_mm'
                 }, 
                 'wind_speed': {
-                    '$avg': '$wind_speed'
+                    '$avg': '$wind_kmh'
                 }, 
                 'clouds': {
-                    '$avg': '$clouds'
+                    '$avg': '$cloud_percent'
                 }
             }
         }
@@ -61,16 +52,16 @@ async def extract_data_daily() -> pd.DataFrame:
     df = df.set_index("_id")
     df = df.set_index(pd.to_datetime(df.index).tz_localize("UTC").rename("date"))
     df = df.sort_index()
-    df["temp"] -= 273
-    df["min_temp"] -= 273
-    df["max_temp"] -= 273
+    df["wind_speed"] /= 3.6
     
     return df
 
 
 async def extract_heatingdemand() -> pd.DataFrame:
     """Extract the daily average of the negative deviation of 14°C = 288°K"""
+    
     collection = get_global_db_client().wetter2
+    
     pipeline = [
         {
             '$addFields': {
@@ -101,7 +92,7 @@ async def extract_heatingdemand() -> pd.DataFrame:
         }, {
             '$group': {
                 '_id': '$date', 
-                'avg_demand': {
+                'heating_demand': {
                     '$avg': '$heatingdemand'
                 }
             }
@@ -122,7 +113,9 @@ async def extract_heatingdemand() -> pd.DataFrame:
 
 async def extract_windpower() -> pd.DataFrame:
     """Extract the daily average of wind-speed**2, which is the equivalent of wind-power"""
+    
     collection = get_global_db_client().wetter2
+    
     pipeline = [
         {
             '$addFields': {

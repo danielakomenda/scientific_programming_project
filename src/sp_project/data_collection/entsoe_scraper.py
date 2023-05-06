@@ -9,12 +9,13 @@ import httpx
 import bs4 # beautifulsoup
 import pandas as pd
 import tqdm
-import anyio
 
 
 
 async def get_datapoints_from_entsoe(country, date):
-    """get-Request to the entsoe.eu-page to get all 'Generation per Type'-Data"""
+    """Access the website with the needed parameters; 
+    select the interesting data from the json-document and create a pandas-dataFrame;
+    return a pandas-dataFrame with the location-, time- and weather-data"""
     
     # There are 20 different productiontypes
     productiontypes = [
@@ -42,13 +43,9 @@ async def get_datapoints_from_entsoe(country, date):
     content_params = {k.strip():v.strip() for k,v in (l.split("=") for l in content_type[1:])}
     content_type = content_type[0]
     
-    if True:
-        # make sure the content is UTF-8 and parse the content with bs4
-        assert res.headers["content-type"] == "text/html;charset=UTF-8", res.headers["content-type"]
-        soup = bs4.BeautifulSoup(res.content.decode("utf-8"))
-    else:
-        assert content_type == "text/html", res.headers["content-type"]
-        soup = bs4.BeautifulSoup(res.content.decode(content_params["charset"]))
+    # make sure the content is UTF-8 and parse the content with bs4
+    assert res.headers["content-type"] == "text/html;charset=UTF-8", res.headers["content-type"]
+    soup = bs4.BeautifulSoup(res.content.decode("utf-8"))
 
     # select only the part 'script' and the chart-list of the http-file
     javascript_str = soup.find("script").text
@@ -83,6 +80,9 @@ async def get_datapoints_from_entsoe(country, date):
 
 
 async def insert_data_in_DB(collection, data):
+    """Insert the data to the collection; if there is already a data-set with the same location and time, 
+    the old data is overwritten"""
+
     data = data.reset_index().to_dict("records")
     for d in data:
         await collection.replace_one(
@@ -95,48 +95,11 @@ async def insert_data_in_DB(collection, data):
         )
 
 
-async def handle_run_the_program(receive_stream, collection):
-    """Handels parallel-processes"""
-    async with receive_stream:
-        async for country, base_date in receive_stream:
-            try:
-                data = await get_datapoints_from_entsoe(country, base_date)
-                await insert_data_in_DB(collection, data)
-
-            except Exception as ex:
-                print(f"{country} / {base_date:%y-%m-%d} failed: {ex!r}")
-                raise
-
-
-async def run_the_program(collection, country, start, end):
-        
-    send_stream, receive_stream = anyio.create_memory_object_stream()
-
-    async with anyio.create_task_group() as task_group:
-        
-        for _ in range(20):
-            task_group.start_soon(
-                handle_run_the_program, 
-                receive_stream.clone(),
-                collection
-            )
-        receive_stream.close()
-        
-        async with send_stream:
-            date_range = tqdm.tqdm(
-                pd.date_range(start,end,freq="D"),
-                leave=False,
-            )
-
-            for base_date in date_range:
-                date_range.set_description(f"{base_date:%y-%m-%d}")
-                await send_stream.send((country, base_date))
-
-
-async def run_the_program_unparallel(collection, country, start, end):
+async def run_the_program(collection, country, start_date, end_date):
+    """Run all the above methodes"""
     
     date_range = tqdm.tqdm(
-        pd.date_range(start,end,freq="D"),
+        pd.date_range(start_date,end_date,freq="D"),
         leave=False,
     )
     
@@ -158,10 +121,10 @@ def main():
     collection = db.entsoe
     
     country = "10YCH-SWISSGRIDZ"
-    end_time = datetime.datetime.now().astimezone()
-    start_time = end_time - datetime.timedelta(days=3)
+    end_date = datetime.datetime.now().astimezone()
+    start_date = end_date - datetime.timedelta(days=3)
 
-    asyncio.run(run_the_program_unparallel(collection=collection, country=country, start=start_time, end=end_time))
+    asyncio.run(run_the_program(collection=collection, country=country, start_date=start_date, end_date=end_date))
 
 
 if __name__ == "__main__":

@@ -13,9 +13,13 @@ logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 app = quart.Quart(__name__)
 
+app.
 
 def run() -> None:
     app.run()
+
+
+
 
 
 @app.get("/")

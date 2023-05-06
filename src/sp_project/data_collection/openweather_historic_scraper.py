@@ -7,10 +7,8 @@ import pandas as pd
 import tqdm # for status-bar
 import anyio # for parallel-processes
 
-import sp_project.data_scraping.openweather_api_client as ow_client
+from sp_project.data_collection.openweather_api_client import OpenWeatherClient
 
-
-api_key_ow = """***REMOVED***""".strip()
 
 coordinates = {
     "grid00": ( 7.10, 46.22),
@@ -38,6 +36,7 @@ coordinates = {
 
 async def get_datapoints_from_OW(location, dt):
     """Collects the data from a specific location and a specific time from the OpenWeatherAPI"""
+    
     data = await location.historic(dt)
     out_data = []
     # flattens the data
@@ -76,69 +75,75 @@ async def insert_data_in_DB(collection, data:list[dict]):
         )
 
 
-async def run_the_program(collection, location, start_time, end_time):
+async def run_the_program(OWclient, collection, locations: dict[str, tuple[float, float]], start_time, end_time):
 
     timestamps_list = pd.date_range(pd.Timestamp(start_time).floor("2H"), end_time, freq="2H")
 
     counter = 0
     limit_reached = False
-    total = len(coordinates)*len(timestamps_list)
+    total = len(locations)*len(timestamps_list)
     pbar = tqdm.tqdm(total=total) # Progress-Bar
-    limiter = anyio.CapacityLimiter(20)
     send_stream, receive_stream = anyio.create_memory_object_stream()
 
     async def handle(receive_stream):
         nonlocal counter, limit_reached
         async with receive_stream:
-            async for location, timestamp in receive_stream:
+            async for weather_station, timestamp in receive_stream:
                 if limit_reached:
                     return
-                if not await check_data_in_DB(collection, lon=location.lon, lat=location.lat, dt=timestamp):
+                if not await check_data_in_DB(collection, lon=weather_station.lon, lat=weather_station.lat, dt=timestamp):
                     async with anyio.CancelScope(shield=True):
                         # ignores external cancellation e.g. when another task fails, as long as the current task is ok
                         try:
-                            result = await get_datapoints_from_OW(location, timestamp)
+                            result = await get_datapoints_from_OW(weather_station, timestamp)
                         except Exception as ex:
                             limit_reached = True
                             print(f'OneCallAPI reached limit at {counter=} and {timestamp=}: {ex!r}')
                             return
                         await insert_data_in_DB(collection, result)                   
-                    counter+=1
+                    counter += 1
                 pbar.update()
 
-
-    async with ow_client.OpenWeatherClient(
-        api_key = api_key_ow,
-    ) as OWclient:
-        async with anyio.create_task_group() as task_group:
-            for _ in range(20):
-                task_group.start_soon(handle, receive_stream.clone())
-            receive_stream.close()
-            async with send_stream:            
-                for timestamp in reversed(timestamps_list):
-                    timestamp = timestamp.to_pydatetime()
-                    for loc_name, loc_coord in coordinates.items():
-                        location = OWclient.station_at(*loc_coord)
-                        try:
-                            await send_stream.send((location, timestamp))
-                        except (anyio.BrokenResourceError, anyio.ClosedResourceError):
-                            break
+    async with anyio.create_task_group() as task_group:
+        for _ in range(20):
+            task_group.start_soon(handle, receive_stream.clone())
+        receive_stream.close()
+        async with send_stream:
+            for timestamp in reversed(timestamps_list):
+                timestamp = timestamp.to_pydatetime()
+                for loc_name, loc_coord in coordinates.items():
+                    weather_station = OWclient.station_at(*loc_coord)
+                    try:
+                        await send_stream.send((weather_station, timestamp))
+                    except (anyio.BrokenResourceError, anyio.ClosedResourceError):
+                        break
     pbar.close()
     print(f'Fetched {len(coordinates)} Locations and {len(timestamps_list)} Timepoints and added {counter}/{total} Elements to Database ') 
 
 
-def main():
+async def main():
+    api_key_ow = "***REMOVED***"
     uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
+
     DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
     db = DBclient.data
     collection = db.openweather
-    
+
     end_time = datetime.datetime.now().astimezone()
     start_time = end_time - datetime.timedelta(days=365)
 
-    asyncio.run(run_the_program(collection=collection, location=coordinates, start_time=start_time, end_time=end_time))
+    async with OpenWeatherClient(
+        api_key = api_key_ow,
+    ) as OWclient:
+        await run_the_program(
+            OWclient=OWclient,
+            collection=collection,
+            locations=coordinates,
+            start_time=start_time,
+            end_time=end_time,
+        )
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
     

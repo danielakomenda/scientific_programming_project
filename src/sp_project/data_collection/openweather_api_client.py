@@ -45,16 +45,13 @@ class OpenWeatherClient:
 
 
     # Defines the weatherstation with the coordinates as parameters
-    def historic_station_at(self, lon, lat):
-        return HistoricWeatherStation(self, lon=lon, lat=lat)
+    def station_at(self, lon, lat):
+        return WeatherStation(self, lon=lon, lat=lat)
     
 
-    def prediction_station_at(self, lon, lat):
-        return PredictionWeatherStation(self, lon=lon, lat=lat)
 
 
-
-class HistoricWeatherStation:
+class WeatherStation:
     """Handels a specific location defined by latitude and longitude"""
 
     def __init__(self, client: OpenWeatherClient, lon: float, lat: float):
@@ -89,17 +86,6 @@ class HistoricWeatherStation:
                     continue
                 d[k] = datetime.datetime.utcfromtimestamp(v).replace(tzinfo=datetime.timezone.utc)
         return ret
-
-
-
-class PredictionWeatherStation:
-    """Handels a specific location defined by latitude and longitude"""
-
-    def __init__(self, client: OpenWeatherClient, lon: float, lat: float):
-        """Constructor"""
-        self._client = client
-        self.lon = lon
-        self.lat = lat
 
 
     async def prediction(self, lang: str = "en"):

@@ -1,9 +1,6 @@
 import pandas as pd
-from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo.server_api import ServerApi
 
 from .db_client import get_global_db_client
-
 
 
 db_field_projection = {
@@ -18,7 +15,9 @@ db_field_projection = {
 
 async def extract_energy_data_daily() -> pd.DataFrame:
     """Extract the daily average of all the data"""
+
     collection = get_global_db_client().entsoe
+
     pipeline = [
     {
         '$addFields': {
@@ -51,7 +50,9 @@ async def extract_energy_data_daily() -> pd.DataFrame:
 
 async def extract_energy_data_raw() -> pd.DataFrame:
     """Extract all the data"""
+
     collection = get_global_db_client().entsoe
+    
     projection={
         '_id': False,
         'datetime': "$datetime",
