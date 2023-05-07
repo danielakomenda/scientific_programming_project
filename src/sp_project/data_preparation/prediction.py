@@ -10,10 +10,10 @@ def extract_predictions_daily(openweather_response):
         dt = pd.Timestamp(d["dt"])
         rows.append(dict(
             dt=dt,
-            temperature = d["temp"]["day"]-273.15,
+            temperature=d["temp"]["day"]-273.15,
             wind_speed=d["wind_speed"],
-            rain=d.get("rain",0),
-            clouds=d.get("clouds",0),
+            rain=d.get("rain", 0),
+            clouds=d.get("clouds", 0),
         )),
     return pd.DataFrame(rows).set_index("dt")
 

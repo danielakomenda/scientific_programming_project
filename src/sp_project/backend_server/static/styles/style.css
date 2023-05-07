@@ -78,7 +78,10 @@ body{
 }
 
 
-#map { height: 300px; }
+#map {
+    height: 300px;
+    position: center;
+}
 
 
 

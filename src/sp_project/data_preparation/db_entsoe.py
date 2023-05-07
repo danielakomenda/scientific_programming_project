@@ -18,8 +18,7 @@ async def extract_energy_data_daily() -> pd.DataFrame:
 
     collection = get_global_db_client().entsoe
 
-    pipeline = [
-    {
+    pipeline = [{
         '$addFields': {
             'date': {
                 '$substr': [
@@ -35,7 +34,7 @@ async def extract_energy_data_daily() -> pd.DataFrame:
     }
     ]
 
-    results=[]
+    results = []
     async for x in collection.aggregate(pipeline):
         results.append(x)
     
@@ -53,13 +52,13 @@ async def extract_energy_data_raw() -> pd.DataFrame:
 
     collection = get_global_db_client().entsoe
     
-    projection={
+    projection = {
         '_id': False,
         'datetime': "$datetime",
         **db_field_projection,
     }
 
-    results= await collection.find(projection=projection).to_list(None)
+    results = await collection.find(projection=projection).to_list(None)
     
     df = pd.DataFrame(results)
     df = df.set_index("datetime")
@@ -68,5 +67,3 @@ async def extract_energy_data_raw() -> pd.DataFrame:
     df["total"] = df.sum(axis="columns")
 
     return df
-
-

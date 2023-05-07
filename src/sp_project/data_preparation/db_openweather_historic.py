@@ -71,7 +71,7 @@ async def extract_data_daily() -> pd.DataFrame:
         }
     ]
 
-    results=[]
+    results = []
     async for x in collection.aggregate(pipeline):
         total_rain = 0
         total_snow = 0
@@ -161,7 +161,7 @@ async def extract_heatingdemand() -> pd.DataFrame:
         }
     ]
 
-    results=[]
+    results = []
     async for x in collection.aggregate(pipeline):
         results.append(x)
     
@@ -201,8 +201,7 @@ async def extract_windpower() -> pd.DataFrame:
         }
     ]
 
-
-    results=[]
+    results = []
     async for x in collection.aggregate(pipeline):
         results.append(x)
     

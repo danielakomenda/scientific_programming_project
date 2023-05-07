@@ -1,3 +1,4 @@
+import json
 import logging
 import sys
 import pickle
@@ -11,9 +12,9 @@ import bokeh.embed
 from sp_project.app_state import AppState
 from sp_project.data_collection.openweather_api_client import OpenWeatherClient
 from sp_project.data_preparation.db_client import get_global_db_client
-from sp_project.data_preparation.model import prepare_prediction_features, energy_prediction
+from sp_project.data_preparation.model_preparation import prepare_prediction_features, energy_prediction
 from sp_project.data_preparation.prediction import fetch_prediction_daily
-from sp_project.data_visualisation.model_visuals import prediction_bokeh_plot
+from sp_project.data_preparation.model_visuals import prediction_bokeh_plot
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
@@ -29,8 +30,8 @@ async def app_lifecycle():
         app_state.model = pickle.load(fh)
     async with OpenWeatherClient(
         api_key="***REMOVED***",
-    ) as OWclient:
-        app_state.ow_client = OWclient
+    ) as ow_client:
+        app_state.ow_client = ow_client
         yield
 
 
@@ -38,9 +39,14 @@ def run() -> None:
     app.run()
 
 
-@app.get("/")
+@app.get('/')
 async def main_page():
     return await quart.render_template("model.html", resources=Markup(CDN.render()))
+
+@app.get('/pages/<string:p>')
+async def web_pages(p):
+    return await quart.render_template(f"{p}.html", resources=Markup(CDN.render()))
+
 
 
 @app.get('/plot')
@@ -65,13 +71,19 @@ async def predict():
         result = await fetch_prediction_daily(app_state, lon=lon, lat=lat)
         features = prepare_prediction_features(result, lat)
         prediction = energy_prediction(app_state.model, features)
-        plot = prediction_bokeh_plot(prediction)
-        return dict(plot=bokeh.embed.json_item(plot))
+        prediction_plot = prediction_bokeh_plot(prediction)
+        data = json.dumps(dict(plot=bokeh.embed.json_item(prediction_plot)))
+        response = app.response_class(
+            response=data,
+            status=200,
+            mimetype="application/json",
+        )
+        return response
     except Exception as ex:
         import traceback
         return dict(
-            error = repr(ex),
-            traceback = traceback.format_exc(),
+            error=repr(ex),
+            traceback=traceback.format_exc(),
         )
 
 

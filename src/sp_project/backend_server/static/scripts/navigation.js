@@ -10,19 +10,19 @@ function generateNavbar() {
       <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
         <ul class="navbar-nav mr-auto lg-2 mt-lg-0">
          <li class="nav-item">
-            <a class="nav-link" href="main.html">Main</a>
+            <a class="nav-link" href="/pages/main">Main</a>
          </li>
           <li class="nav-item">
-            <a class="nav-link" href="weather_historic.html">Historic Weather</a>
+            <a class="nav-link" href="/pages/weather_historic">Historic Weather</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="energy_historic.html">Historic Energy-Generation</a>
+            <a class="nav-link" href="/pages/energy_historic">Historic Energy-Generation</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="model.html">Prediction Model</a>
+            <a class="nav-link" href="/pages/model">Prediction Model</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="extra.html">Extra</a>  
+            <a class="nav-link" href="/pages/extra">Extra</a>
           </li>
         </ul>
       </div>

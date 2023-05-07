@@ -1,9 +1,29 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo.server_api import ServerApi
 import numpy as np
-import sklearn.cross_decomposition
+
+import sp_project.data_collection.openweather_prediction as weatherprediction
+from sp_project.app_state import AppState
+
+
+def extract_predictions_daily(openweather_response):
+    rows = []
+    for d in openweather_response["daily"]:
+        dt = pd.Timestamp(d["dt"])
+        rows.append(dict(
+            dt=dt,
+            temperature=d["temp"]["day"]-273.15,
+            wind_speed=d["wind_speed"],
+            rain=d.get("rain", 0),
+            clouds=d.get("clouds", 0),
+        )),
+    return pd.DataFrame(rows).set_index("dt")
+
+
+async def fetch_prediction_daily(app_state: AppState, *, lon, lat):
+    openweather_response = await weatherprediction.get_prediction_for_location(app_state, lon=lon, lat=lat)
+    result = extract_predictions_daily(openweather_response)
+
+    return result
 
 
 def total_daily_solarpower(date, lat):
@@ -47,4 +67,3 @@ def energy_prediction(model, input_features):
     prediction = pd.DataFrame(prediction, index=input_features.index, columns=model["prediction_columns"])
 
     return prediction
-

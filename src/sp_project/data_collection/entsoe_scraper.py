@@ -1,15 +1,14 @@
 import asyncio
-import re # regular-expression
+import re  # regular-expression
 import json
 import datetime
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
 import httpx
-import bs4 # beautifulsoup
+import bs4  # beautifulsoup
 import pandas as pd
 import tqdm
-
 
 
 async def get_datapoints_from_entsoe(country, date):
@@ -20,7 +19,7 @@ async def get_datapoints_from_entsoe(country, date):
     # There are 20 different productiontypes
     productiontypes = [
         ("productionType.values", f"B{k:02}")
-        for k in range(1,20)
+        for k in range(1, 21)
     ]
 
     async with httpx.AsyncClient(
@@ -39,17 +38,13 @@ async def get_datapoints_from_entsoe(country, date):
             headers={"X-Requested-With": "XMLHttpRequest"},
         )
 
-    content_type = res.headers["content-type"].lower().split(";")
-    content_params = {k.strip():v.strip() for k,v in (l.split("=") for l in content_type[1:])}
-    content_type = content_type[0]
-    
     # make sure the content is UTF-8 and parse the content with bs4
     assert res.headers["content-type"] == "text/html;charset=UTF-8", res.headers["content-type"]
     soup = bs4.BeautifulSoup(res.content.decode("utf-8"))
 
     # select only the part 'script' and the chart-list of the http-file
     javascript_str = soup.find("script").text
-    match = re.search(r"var\s+chart\s*=\s*(\{.*\})\s*;", javascript_str, re.S)
+    match = re.search(r"var\s+chart\s*=\s*({.*})\s*;", javascript_str, re.S)
     assert match is not None
 
     # returns the first element of the group
@@ -57,8 +52,8 @@ async def get_datapoints_from_entsoe(country, date):
 
     # defines the columns for the dataframe
     columns = {
-        k:" ".join(v["title"].split())
-        for k,v in
+        k: " ".join(v["title"].split())
+        for k, v in
         data["graphDesign"].items()
     }
 
@@ -79,7 +74,7 @@ async def get_datapoints_from_entsoe(country, date):
     return df
 
 
-async def insert_data_in_DB(collection, data):
+async def insert_data_in_db(collection, data):
     """Insert the data to the collection; if there is already a data-set with the same location and time, 
     the old data is overwritten"""
 
@@ -99,7 +94,7 @@ async def run_the_program(collection, country, start_date, end_date):
     """Run all the above methodes"""
     
     date_range = tqdm.tqdm(
-        pd.date_range(start_date,end_date,freq="D"),
+        pd.date_range(start_date, end_date, freq="D"),
         leave=False,
     )
     
@@ -107,7 +102,7 @@ async def run_the_program(collection, country, start_date, end_date):
         try:
             date_range.set_description(f"{base_date:%y-%m-%d}")
             data = await get_datapoints_from_entsoe(country, base_date)
-            await insert_data_in_DB(collection, data)
+            await insert_data_in_db(collection, data)
 
         except Exception as ex:
             print(f"{country} / {base_date:%y-%m-%d} failed: {ex!r}")

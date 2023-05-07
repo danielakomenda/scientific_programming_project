@@ -3,7 +3,6 @@ import pandas as pd
 from .db_client import get_global_db_client
 
 
-
 async def extract_data_daily() -> pd.DataFrame:
     """Extract the daily averages of all the interesting datapoints"""
     
@@ -44,7 +43,7 @@ async def extract_data_daily() -> pd.DataFrame:
         }
     ]
 
-    results=[]
+    results = []
     async for x in collection.aggregate(pipeline):
         results.append(x)
     
@@ -99,7 +98,7 @@ async def extract_heatingdemand() -> pd.DataFrame:
         }
     ]
 
-    results=[]
+    results = []
     async for x in collection.aggregate(pipeline):
         results.append(x)
     
@@ -133,7 +132,7 @@ async def extract_windpower() -> pd.DataFrame:
                         '$pow': [
                             {
                                 '$divide': [
-                                    "$wind_kmh",3.6
+                                    "$wind_kmh", 3.6
                                 ]
                             }, 2]
                     }
@@ -142,7 +141,7 @@ async def extract_windpower() -> pd.DataFrame:
         }
     ]
 
-    results=[]
+    results = []
     async for x in collection.aggregate(pipeline):
         results.append(x)
     
