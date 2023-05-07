@@ -1,25 +1,41 @@
 import logging
 import sys
+import pickle
 
 import quart
 from bokeh.resources import CDN
 from markupsafe import Markup
 import anyio
-import folium
+import bokeh.embed
 
-
+from sp_project.app_state import AppState
+from sp_project.data_collection.openweather_api_client import OpenWeatherClient
+from sp_project.data_preparation.db_client import get_global_db_client
+from sp_project.data_preparation.model import prepare_prediction_features, energy_prediction
+from sp_project.data_preparation.prediction import fetch_prediction_daily
+from sp_project.data_visualisation.model_visuals import prediction_bokeh_plot
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 app = quart.Quart(__name__)
 
-app.
+app_state = AppState()
+
+
+@app.while_serving
+async def app_lifecycle():
+    app_state.db_client = get_global_db_client()
+    with open(app.root_path/"assets/prediction-model.pickle", "rb") as fh:
+        app_state.model = pickle.load(fh)
+    async with OpenWeatherClient(
+        api_key="***REMOVED***",
+    ) as OWclient:
+        app_state.ow_client = OWclient
+        yield
+
 
 def run() -> None:
     app.run()
-
-
-
 
 
 @app.get("/")
@@ -41,23 +57,23 @@ async def plot():
     return response
 
 
-@app.get('/prediction')
-async def predict(lon:float, lat:float):
-    pass
-
-
-@app.get('/map')
-async def map():
-    # create a Folium map
-    m = folium.Map(location=[51.5074, -0.1278], zoom_start=12)
-
-    # add a marker to the map
-    folium.Marker(location=[51.5074, -0.1278], popup='London').add_to(m)
-
-    # render the HTML template with the map
-    return await quart.render_template('model.html', map=m._repr_html_())
-
+@app.get('/prediction-plot')
+async def predict():
+    try:
+        lat = float(quart.request.args["lat"])
+        lon = float(quart.request.args["lon"])
+        result = await fetch_prediction_daily(app_state, lon=lon, lat=lat)
+        features = prepare_prediction_features(result, lat)
+        prediction = energy_prediction(app_state.model, features)
+        plot = prediction_bokeh_plot(prediction)
+        return dict(plot=bokeh.embed.json_item(plot))
+    except Exception as ex:
+        import traceback
+        return dict(
+            error = repr(ex),
+            traceback = traceback.format_exc(),
+        )
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=5001)

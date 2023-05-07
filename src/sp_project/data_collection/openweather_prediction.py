@@ -13,7 +13,7 @@ from sp_project.data_collection.openweather_api_client import OpenWeatherClient
 
 async def check_data_in_DB(collection, lon, lat):
     """Check if DB has already an entry to a specific location that is older than 24 hours;
-    return 'True' if there is already an entry and return 'False' if there is none"""
+    return the result, that is either None if there is no entry in the DB or the entry itself"""
     
     yesterday = datetime.datetime.now().astimezone() - datetime.timedelta(hours=24)
     
@@ -29,7 +29,7 @@ async def check_data_in_DB(collection, lon, lat):
     return result
 
 
-async def get_datapoints_from_OW(location):
+async def get_datapoint_from_OW(location):
     """Collect the data from a specific location from the OpenWeatherAPI;
     Return the data as a list with dictionaries"""
     
@@ -38,9 +38,8 @@ async def get_datapoints_from_OW(location):
     lon = data.pop('lon')
     
     data['location'] = dict(type="Point", coordinates=[lon, lat])
-    out_data = [data]
 
-    return out_data
+    return data
 
 
 async def insert_data_in_DB(collection, data:list[dict]):
@@ -66,8 +65,8 @@ async def get_prediction_for_location(app_state: AppState, *, lon, lat):
     result = await check_data_in_DB(collection, lon=weather_station.lon, lat=weather_station.lat)
                 
     if result is None:
-        result = await get_datapoints_from_OW(weather_station)
-        await insert_data_in_DB(collection, result)
+        result = await get_datapoint_from_OW(weather_station)
+        await insert_data_in_DB(collection, [result])
     
     return result
 

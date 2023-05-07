@@ -7,7 +7,7 @@ from sp_project.app_state import AppState
 def extract_predictions_daily(openweather_response):
     rows = []
     for d in openweather_response["daily"]:
-        dt = pd.Timestamp(d["dt"]).tz_localize("UTC")
+        dt = pd.Timestamp(d["dt"])
         rows.append(dict(
             dt=dt,
             temperature = d["temp"]["day"]-273.15,

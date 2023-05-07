@@ -74,5 +74,11 @@ body{
 }
 
 .fat {
-    font-weight: bold;
+    font-weight: bold-and-fat;
 }
+
+
+#map { height: 300px; }
+
+
+

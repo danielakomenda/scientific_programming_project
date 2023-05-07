@@ -177,19 +177,19 @@ async def prepare_the_data(location, authority, year, month, day):
         data = dict(
             temp_C = [
                 float(span["data-temp"])
-                for span in body.find("th",text="Temperatur").parent.find_all("span",class_="day_temp")
+                for span in body.find("th", text="Temperatur").parent.find_all("span",class_="day_temp")
             ],
             rain_mm = [
                 float(td.find("span",class_=lambda c:not c).text.replace(",","."))
-                for td in body.find("th",text="Niederschlag").parent.find_all("td")
+                for td in body.find("th", text="Niederschlag").parent.find_all("td")
             ],
             wind_kmh = [
                 float(span["data-wind"])
-                for span in body.find("th",text="Wind").parent.find_all("span",class_="day_wind")
+                for span in body.find("th", text="Wind").parent.find_all("span",class_="day_wind")
             ],
             cloud_percent = [
                 float(td.text.replace(",",".").rstrip('%')) # no percentage-symbol, instead of , we need dots for decimals
-                for td in body.find("th",text="Wolkendecke").parent.find_all("td")
+                for td in body.find("th", text="Wolkendecke").parent.find_all("td")
             ],
         )
     
@@ -251,14 +251,14 @@ async def run_the_program(collection, locations, year, start_date, end_date):
         receive_stream.close()
         async with send_stream:            
     
-            for k,v in location_range:
-                location=k
-                authority=v
+            for k, v in location_range:
+                location = k
+                authority = v
                 location_range.set_description(location)
 
                 # we only need the month and day of this date_range;
                 date_range = tqdm.tqdm(
-                    pd.date_range(start_date,end_date,freq="D"),
+                    pd.date_range(start_date, end_date, freq="D"),
                     leave=False,
                 )
 
