@@ -17,7 +17,6 @@ async def check_data_in_db(collection, lon, lat):
          'current.dt': {'$gt': yesterday}   
         }
     )
-
     return result
 
 

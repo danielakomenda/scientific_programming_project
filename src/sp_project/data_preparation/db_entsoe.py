@@ -40,7 +40,7 @@ async def extract_energy_data_daily() -> pd.DataFrame:
     
     df = pd.DataFrame(results)
     df = df.set_index("_id")
-    df = df.set_index(pd.to_datetime(df.index).tz_localize("UTC").rename("date"))
+    df = df.set_index(pd.to_datetime(df.index).rename("date").tz_localize("UTC"))
     df = df.sort_index()
     df["total"] = df.sum(axis="columns")
 
@@ -62,7 +62,7 @@ async def extract_energy_data_raw() -> pd.DataFrame:
     
     df = pd.DataFrame(results)
     df = df.set_index("datetime")
-    df = df.set_index(pd.to_datetime(df.index).tz_localize("UTC"))
+    df = df.set_index(pd.to_datetime(df.index))
     df = df.sort_index()
     df["total"] = df.sum(axis="columns")
 
