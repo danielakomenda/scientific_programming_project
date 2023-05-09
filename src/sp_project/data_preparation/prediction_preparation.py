@@ -7,7 +7,7 @@ from sp_project.data_preparation.solar_power import total_solarpower_below_cloud
 from sp_project.app_state import AppState
 
 
-def extract_predictions_daily(app_state: AppState, *, lon, lat):
+async def extract_predictions_daily(app_state: AppState, *, lon, lat):
     openweather_response = await get_prediction_for_location(app_state, lon=lon, lat=lat)
 
     rows = []
