@@ -1,0 +1,12 @@
+accesslog = "-"
+errorlog = "-"
+loglevel = "debug"
+
+bind = "0.0.0.0:80"
+
+logconfig_dict.version = 1
+logconfig_dict.incremental = true
+logconfig_dict.root.level = "INFO"
+[logconfig_dict.loggers]
+httpcore.level = "WARNING"
+httpx.level = "INFO"

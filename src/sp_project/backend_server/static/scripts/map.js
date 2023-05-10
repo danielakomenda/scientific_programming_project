@@ -13,10 +13,10 @@ function setUpMap() {
         }
         $.get("/prediction-plot", {lat:e.latlng.lat, lon:e.latlng.lng}, function( data ) {
           console.log( "Load was performed." );
-          const plots_div = $("#plots");
+          const plots_div = $("#prediction-plot");
           plots_div.empty();
           if(data.plot !== undefined){
-              Bokeh.embed.embed_item(data.plot, "plots");
+              Bokeh.embed.embed_item(data.plot, "prediction-plot");
           } else {
             plots_div.append("<h1>"+data.error+"</h1>");
             plots_div.append("<pre>"+data.traceback+"</pre>");

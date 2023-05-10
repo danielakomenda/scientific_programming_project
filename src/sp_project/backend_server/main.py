@@ -9,11 +9,9 @@ from markupsafe import Markup
 import anyio
 import bokeh.embed
 
-# from sp_project.app_state import AppState
 from sp_project.data_collection.openweather_api_client import OpenWeatherClient
 from sp_project.data_preparation.db_client import get_global_db_client
 from sp_project.data_preparation.prediction_preparation import *
-# from data.prediction import fetch_prediction_daily
 from sp_project.data_modelling.model_visuals import prediction_bokeh_plot
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
@@ -41,12 +39,12 @@ def run() -> None:
 
 @app.get('/')
 async def main_page():
-    return await quart.render_template("model.html", resources=Markup(CDN.render()))
+    return await quart.render_template("main.html", resources=Markup(CDN.render()))
+
 
 @app.get('/pages/<string:p>')
 async def web_pages(p):
     return await quart.render_template(f"{p}.html", resources=Markup(CDN.render()))
-
 
 
 @app.get('/plot')

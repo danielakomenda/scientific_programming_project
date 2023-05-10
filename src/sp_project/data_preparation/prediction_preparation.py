@@ -21,7 +21,9 @@ async def extract_predictions_daily(app_state: AppState, *, lon, lat):
             clouds=d.get("clouds", 0),
         )),
 
-    return pd.DataFrame(rows).set_index("dt")
+    result = pd.DataFrame(rows).set_index("dt")
+
+    return result
 
 
 def prepare_prediction_features(data, lat):
@@ -30,7 +32,7 @@ def prepare_prediction_features(data, lat):
         windpower=data.wind_speed ** 2,
         rain=data.rain,
         solar_power=total_solarpower_below_clouds(
-            data.index,
+            data,
             lat
         )
     ))
