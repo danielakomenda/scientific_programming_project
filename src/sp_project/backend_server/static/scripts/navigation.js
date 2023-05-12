@@ -22,7 +22,7 @@ function generateNavbar() {
             <a class="nav-link" href="/pages/model">Prediction Model</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/pages/extra">Extra</a>
+            <a class="nav-link" href="/pages/game">Game</a>
           </li>
         </ul>
       </div>

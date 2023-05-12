@@ -15,8 +15,9 @@ function setUpMap() {
           console.log( "Load was performed." );
           const plots_div = $("#prediction-plot");
           plots_div.empty();
-          if(data.plot !== undefined){
-              Bokeh.embed.embed_item(data.plot, "prediction-plot");
+          if(data.line_plot !== undefined){
+              Bokeh.embed.embed_item(data.line_plot, "prediction-plot");
+              Bokeh.embed.embed_item(data.pie_plot, "prediction-plot");
           } else {
             plots_div.append("<h1>"+data.error+"</h1>");
             plots_div.append("<pre>"+data.traceback+"</pre>");

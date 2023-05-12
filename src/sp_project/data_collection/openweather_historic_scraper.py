@@ -76,9 +76,7 @@ async def insert_data_in_db(collection, data: list[dict]):
 
 
 async def run_the_program(ow_client, collection, locations: dict[str, tuple[float, float]], start_time, end_time):
-
     timestamps_list = pd.date_range(pd.Timestamp(start_time).floor("2H"), end_time, freq="2H")
-
     counter = 0
     limit_reached = False
     total = len(locations)*len(timestamps_list)

@@ -12,7 +12,7 @@ import bokeh.embed
 from sp_project.data_collection.openweather_api_client import OpenWeatherClient
 from sp_project.data_preparation.db_client import get_global_db_client
 from sp_project.data_preparation.prediction_preparation import *
-from sp_project.data_modelling.model_visuals import prediction_bokeh_plot
+from sp_project.data_modelling.model_visuals import *
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
@@ -69,8 +69,12 @@ async def predict():
         result = await extract_predictions_daily(app_state, lon=lon, lat=lat)
         features = prepare_prediction_features(result, lat)
         prediction = energy_prediction(app_state.model, features)
-        prediction_plot = prediction_bokeh_plot(prediction)
-        data = json.dumps(dict(plot=bokeh.embed.json_item(prediction_plot)))
+        prediction_line_plot = prediction_bokeh_line_plot(prediction)
+        prediction_pie_plot = prediction_bokeh_pie_plot(prediction)
+        data = json.dumps(dict(
+            line_plot=bokeh.embed.json_item(prediction_line_plot),
+            pie_plot=bokeh.embed.json_item(prediction_pie_plot),
+        ))
         response = app.response_class(
             response=data,
             status=200,
@@ -83,6 +87,7 @@ async def predict():
             error=repr(ex),
             traceback=traceback.format_exc(),
         )
+
 
 
 if __name__ == "__main__":

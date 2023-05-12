@@ -11,6 +11,9 @@ import pandas as pd
 import tqdm
 
 
+db_access = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
+
+
 async def get_datapoints_from_entsoe(country, date):
     """Access the website with the needed parameters; 
     select the interesting data from the json-document and create a pandas-dataFrame;
@@ -109,15 +112,17 @@ async def run_the_program(collection, country, start_date, end_date):
             raise
 
 
+
+
 def main():
-    uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
-    DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
-    db = DBclient.data
+    uri = db_access
+    db_client = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
+    db = db_client.data
     collection = db.entsoe
     
     country = "10YCH-SWISSGRIDZ"
     end_date = datetime.datetime.now().astimezone()
-    start_date = end_date - datetime.timedelta(days=3)
+    start_date = end_date - datetime.timedelta(days=365)
 
     asyncio.run(run_the_program(collection=collection, country=country, start_date=start_date, end_date=end_date))
 
