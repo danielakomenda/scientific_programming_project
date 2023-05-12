@@ -11,8 +11,8 @@ import bokeh.embed
 
 from sp_project.data_collection.openweather_api_client import OpenWeatherClient
 from sp_project.data_preparation.db_client import get_global_db_client
-from sp_project.data_preparation.prediction_preparation import *
-from sp_project.data_modelling.model_visuals import *
+from sp_project.data_modelling.prediction_preparation import *
+from sp_project.data_visuals.energy_prediction_plots import *
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
@@ -70,7 +70,7 @@ async def predict():
         features = prepare_prediction_features(result, lat)
         prediction = energy_prediction(app_state.model, features)
         prediction_line_plot = prediction_bokeh_line_plot(prediction)
-        prediction_pie_plot = prediction_bokeh_pie_plot(prediction)
+        prediction_pie_plot = energy_prediction_pieplot(prediction)
         data = json.dumps(dict(
             line_plot=bokeh.embed.json_item(prediction_line_plot),
             pie_plot=bokeh.embed.json_item(prediction_pie_plot),
