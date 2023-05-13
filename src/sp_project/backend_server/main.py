@@ -10,9 +10,16 @@ import anyio
 import bokeh.embed
 
 from sp_project.data_collection.openweather_api_client import OpenWeatherClient
-from sp_project.data_preparation.db_client import get_global_db_client
-from sp_project.data_modelling.prediction_preparation import *
+
+from sp_project.data_preparation.db_entsoe import extract_energy_data_raw, extract_energy_data_daily
+from sp_project.data_preparation.db_openweather_historic import *
+
+from sp_project.data_visuals.energy_historic_plots import energy_grouped_bar_plot, energy_yearly_pieplot, \
+    energy_overview_plot
 from sp_project.data_visuals.energy_prediction_plots import *
+
+from sp_project.data_visuals.weather_historic_plots import weather_overview_plot
+from sp_project.data_visuals.weather_prediction_plots import *
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
@@ -61,19 +68,20 @@ async def plot():
     return response
 
 
-@app.get('/prediction-plot')
-async def predict():
+@app.get('/energy-historic-plot')
+async def energy_historic():
     try:
-        lat = float(quart.request.args["lat"])
-        lon = float(quart.request.args["lon"])
-        result = await extract_predictions_daily(app_state, lon=lon, lat=lat)
-        features = prepare_prediction_features(result, lat)
-        prediction = energy_prediction(app_state.model, features)
-        prediction_line_plot = prediction_bokeh_line_plot(prediction)
-        prediction_pie_plot = energy_prediction_pieplot(prediction)
+        raw_result = await extract_energy_data_raw()
+        daily_result = await extract_energy_data_daily()
+
+        energy_historic_grouped_barplot = energy_grouped_bar_plot(daily_result)
+        energy_historic_plot = energy_overview_plot(raw_result=raw_result, daily_result=daily_result)
+        energy_historic_pie = energy_yearly_pieplot(daily_result)
+
         data = json.dumps(dict(
-            line_plot=bokeh.embed.json_item(prediction_line_plot),
-            pie_plot=bokeh.embed.json_item(prediction_pie_plot),
+            #plot1=bokeh.embed.json_item(energy_historic_grouped_barplot),
+            plot2=bokeh.embed.json_item(energy_historic_plot),
+            plot3=bokeh.embed.json_item(energy_historic_pie),
         ))
         response = app.response_class(
             response=data,
@@ -88,6 +96,82 @@ async def predict():
             traceback=traceback.format_exc(),
         )
 
+
+@app.get('/energy-prediction-plot')
+async def energy_predict():
+    try:
+        lat = float(quart.request.args["lat"])
+        lon = float(quart.request.args["lon"])
+
+        result = await extract_predictions_daily(app_state, lon=lon, lat=lat)
+        features = prepare_prediction_features(result, lat)
+        prediction = energy_prediction(app_state.model, features)
+
+        energy_prediction_plot = energy_prediction_interactive_plot(prediction)
+        energy_prediction_pie = energy_prediction_pieplot(prediction)
+
+        data = json.dumps(dict(
+            energy_prediction_plot1=bokeh.embed.json_item(energy_prediction_plot),
+            energy_prediction_plot2=bokeh.embed.json_item(energy_prediction_pie),
+        ))
+        response = app.response_class(
+            response=data,
+            status=200,
+            mimetype="application/json",
+        )
+        return response
+    except Exception as ex:
+        import traceback
+        return dict(
+            error=repr(ex),
+            traceback=traceback.format_exc(),
+        )
+
+
+@app.get('/weather-historic-plot')
+async def weather_historic():
+    try:
+        result = await extract_data_daily()
+        weather_historic_plot = weather_overview_plot(result)
+        data = json.dumps(dict(
+            plot1=bokeh.embed.json_item(weather_historic_plot),
+        ))
+        response = app.response_class(
+            response=data,
+            status=200,
+            mimetype="application/json",
+        )
+        return response
+    except Exception as ex:
+        import traceback
+        return dict(
+            error=repr(ex),
+            traceback=traceback.format_exc(),
+        )
+
+
+@app.get('/weather-prediction-plot')
+async def weather_predict():
+    try:
+        lat = float(quart.request.args["lat"])
+        lon = float(quart.request.args["lon"])
+        result = await extract_predictions_daily(app_state, lon=lon, lat=lat)
+        weather_prediction_plot = weather_prediction_interactive_plot(result)
+        data = json.dumps(dict(
+            weather_prediction_plot=bokeh.embed.json_item(weather_prediction_plot),
+        ))
+        response = app.response_class(
+            response=data,
+            status=200,
+            mimetype="application/json",
+        )
+        return response
+    except Exception as ex:
+        import traceback
+        return dict(
+            error=repr(ex),
+            traceback=traceback.format_exc(),
+        )
 
 
 if __name__ == "__main__":

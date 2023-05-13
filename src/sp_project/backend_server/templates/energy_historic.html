@@ -28,26 +28,19 @@
             <div class="title">Historic Energy-Generation</div>
             <div class="row">
                 <div class="col-12 col-sm-12">
-                    <p class="info-text">
-                    On this page you can find the historic Energy-Generation for the different Energy-Types.
-                    You can choose if you want them to be displayed as time-plot, bar-plot, pie-chart or as a table.
+                    <p class="info-text framed">
+                    On this page you can find the historic Energy-Production for the different Energy-Types.
+                    In the Overview-Plot you can see all data of the last two years stacked.
+                    Like this you can as well see the total Energy-Production.
+
+                    In the Pie-Chart you can see the Ratio between the different Energy-Production-Types.
                     </p>
                 </div>
-            <div class="row">
-                <div class="col-12 col-sm-12 center framed" id="energy-plot1">
-                    Plot
-                </div>
-
             </div>
             <div class="row">
-                <div class="col-12 col-sm-6 box">
-                    Feld1
-                </div>
-                <div class="col-12 col-sm-6 box">
-                    Feld2        
-                </div>
+                <div class="col-12 col-sm-12" id="energy-historic-plot1"></div>
             </div>
-    </container>
+        </div>
     </main>    
 
     <footer class="footer">
@@ -57,9 +50,17 @@
     
 
     <script type="module">
-        const response = await fetch('/plot')
-        const item = await response.json()
-        Bokeh.embed.embed_item(item, "plots")
+      const response = await fetch('/energy-historic-plot')
+      const data = await response.json()
+
+      const plots_div = $("#plot1");
+      if(data.plot2 !== undefined){
+          Bokeh.embed.embed_item(data.plot2, "energy-historic-plot1");
+          Bokeh.embed.embed_item(data.plot3, "energy-historic-plot1");
+      } else {
+        plots_div.append("<h1>"+data.error+"</h1>");
+        plots_div.append("<pre>"+data.traceback+"</pre>");
+      }
     </script>
     
 </body>

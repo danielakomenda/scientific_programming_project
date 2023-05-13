@@ -27,26 +27,17 @@
         <div class="title">Historic Weather</div>
         <div class="row">
             <div class="col-12 col-sm-12">
-                <p class="info-text">
-                On this page you can find the historic Energy-Generation for the different Energy-Types.
-                You can choose if you want them to be displayed as time-plot, bar-plot, pie-chart or as a table.
+                <p class="info-text framed">
+                    On this page you can find the historic Weather-Data.
+                    We displayed the average Temperature and Rain over the last two years.
                 </p>
             </div>
+        </div>
         <div class="row">
-            <div class="col-12 col-sm-12 center framed" id="energy-plot1">
-                Plot
-            </div>
+            <div class="col-12 col-sm-12" id="weather-historic-plot1"></div>
+        </div>
 
-        </div>
-        <div class="row">
-            <div class="col-12 col-sm-6 box">
-                Feld1
-            </div>
-            <div class="col-12 col-sm-6 box">
-                Feld2        
-            </div>
-        </div>
-</container>
+    </div>
 </main>
 
     <footer class="footer">
@@ -56,9 +47,16 @@
     
     
     <script type="module">
-        const response = await fetch('/plot')
-        const item = await response.json()
-        Bokeh.embed.embed_item(item, "plots")
+      const response = await fetch('/weather-historic-plot')
+      const data = await response.json()
+
+      const plots_div = $("#plot1");
+      if(data.plot1 !== undefined){
+          Bokeh.embed.embed_item(data.plot1, "weather-historic-plot1");
+      } else {
+        plots_div.append("<h1>"+data.error+"</h1>");
+        plots_div.append("<pre>"+data.traceback+"</pre>");
+      }
     </script>
 
 

@@ -11,11 +11,7 @@ from sp_project.notebook_tools import default_clients
 import sp_project.app_state
 
 
-def weather_prediction_interactive_plot(*, lon, lat):
-    async with default_clients() as (ow_client, db):
-        app_state = sp_project.app_state.AppState(ow_client=ow_client, db_client=db)
-        result = await extract_predictions_daily(app_state, lon=lon, lat=lat)
-
+def weather_prediction_interactive_plot(result):
     day_source = bokeh.models.ColumnDataSource(data=result)
 
     middle = result.index[len(result) // 2]
@@ -46,7 +42,7 @@ def weather_prediction_interactive_plot(*, lon, lat):
     )
 
     for fig in [p, overview]:
-        fig.extra_y_ranges['rain'] = bokeh.models.Range1d(0, 5, bounds=(0, None))
+        fig.extra_y_ranges['rain'] = bokeh.models.Range1d(0, result.rain.max(), bounds=(0, None))
 
         fig.vbar(
             x='dt',

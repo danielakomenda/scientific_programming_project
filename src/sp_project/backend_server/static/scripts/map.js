@@ -1,8 +1,7 @@
 function setUpMap() {
 
     var map = L.map('map').setView([47, 8], 8);
-
-    var marker = undefined; // L.marker().addTo(map);
+    var marker = undefined;
 
     function onMapClick(e) {
         console.log("You clicked the map at " + e.latlng);
@@ -11,18 +10,31 @@ function setUpMap() {
         } else {
           marker.setLatLng(e.latlng);
         }
-        $.get("/prediction-plot", {lat:e.latlng.lat, lon:e.latlng.lng}, function( data ) {
+        $.get("/energy-prediction-plot", {lat:e.latlng.lat, lon:e.latlng.lng}, function( data ) {
           console.log( "Load was performed." );
-          const plots_div = $("#prediction-plot");
+          const plots_div = $("#energy-prediction-plot");
           plots_div.empty();
-          if(data.line_plot !== undefined){
-              Bokeh.embed.embed_item(data.line_plot, "prediction-plot");
-              Bokeh.embed.embed_item(data.pie_plot, "prediction-plot");
+          if(data.energy_prediction_plot1 !== undefined){
+              Bokeh.embed.embed_item(data.energy_prediction_plot1, "energy-prediction-plot");
+              Bokeh.embed.embed_item(data.energy_prediction_plot2, "energy-prediction-plot");
           } else {
             plots_div.append("<h1>"+data.error+"</h1>");
             plots_div.append("<pre>"+data.traceback+"</pre>");
           }
         })
+
+         $.get("/weather-prediction-plot", {lat:e.latlng.lat, lon:e.latlng.lng}, function( data ) {
+          console.log( "Load was performed." );
+          const plots_div = $("#weather-prediction-plot");
+          plots_div.empty();
+          if(data.weather_prediction_plot !== undefined){
+              Bokeh.embed.embed_item(data.weather_prediction_plot, "weather-prediction-plot");
+          } else {
+            plots_div.append("<h1>"+data.error+"</h1>");
+            plots_div.append("<pre>"+data.traceback+"</pre>");
+          }
+        })
+
     }
 
 

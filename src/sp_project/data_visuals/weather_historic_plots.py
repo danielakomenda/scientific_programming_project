@@ -8,15 +8,14 @@ import bokeh.palettes
 import bokeh.transform
 import bokeh.embed
 
-import sp_project.data_preparation.db_wetter2 as wetter2_data
 
+def weather_overview_plot(data):
 
-async def wetter2_overview_plot():
-    df_wetter2_daily = await wetter2_data.extract_data_daily()
-    day_source = bokeh.models.ColumnDataSource(data=df_wetter2_daily)
+    day_source = bokeh.models.ColumnDataSource(data=data)
 
-    middle = df_wetter2_daily.index[len(df_wetter2_daily) // 2]
+    middle = data.index[len(data) // 2]
     selection_range = pd.Timedelta("20 days")
+
 
     # Selected-Part-Plot
     p = bokeh.plotting.figure(
@@ -45,7 +44,7 @@ async def wetter2_overview_plot():
     )
 
     for fig in [p, overview]:
-        fig.extra_y_ranges['rain'] = bokeh.models.Range1d(0, 5, bounds=(0, None))
+        fig.extra_y_ranges['rain'] = bokeh.models.Range1d(0, data.rain.max()+1, bounds=(0, None))
 
         fig.vbar(
             x='date',
@@ -83,13 +82,13 @@ async def wetter2_overview_plot():
     return fig
 
 
-async def wetter2_boxplot():
-    df_wetter2_daily = await wetter2_data.extract_data_daily()
-    temp = df_wetter2_daily.avg_temp
-    plt.boxplot(temp)
+async def wetter2_boxplot(data):
+    temp = data.avg_temp
+    plot = plt.boxplot(temp)
+    return plot
 
 
-async def wetter2_histplot():
-    df_wetter2_daily = await wetter2_data.extract_data_daily()
-    temp = df_wetter2_daily.avg_temp
-    plt.hist(temp, edgecolor='black', linewidth=1.2)
+async def wetter2_histplot(data):
+    temp = data.avg_temp
+    plot = plt.hist(temp, edgecolor='black', linewidth=1.2)
+    return plot

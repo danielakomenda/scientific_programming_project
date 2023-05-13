@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 
-
 from sp_project.data_collection.openweather_prediction import get_prediction_for_location
 from sp_project.data_preparation.solar_power import total_solarpower_below_clouds
 from sp_project.app_state import AppState
@@ -43,5 +42,5 @@ def prepare_prediction_features(data, lat):
 def energy_prediction(model, input_features):
     prediction = model["regressor"].predict(input_features.loc[:, model["input_columns"]])
     prediction = pd.DataFrame(prediction, index=input_features.index, columns=model["prediction_columns"])
-
+    prediction = np.maximum(prediction, 0)
     return prediction

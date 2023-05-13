@@ -2,10 +2,6 @@ body {
     background-color:#e0dbd0;
 }
 
-.navi {
-    background-color: #cac0a1;
-}
-
 .title {
     text-align: center;
     margin:10px;
@@ -21,6 +17,9 @@ body {
 .container {
     margin-top:20px;
     margin-bottom: 20px;
+    position: center;
+    border:0px;
+    background-color:#ffffff;
 }
 
 .framed {
@@ -34,14 +33,7 @@ body {
     margin: auto;
     align-content: center;
     text-align: center;
-  }
-
-.box{
-    border-color: #211d12f6;
-    border-style:outset;
-    border-width: 0.5 px;
-    background-color:#efece2;
-}
+ }
 
 .info-text {
     color:#473f28f6;
@@ -72,10 +64,4 @@ body {
 #map {
     height: 300px;
     position: center;
-}
-
-#prediction-plot {
-    position: center;
-    border:0px;
-    background-color:#ffffff;
 }

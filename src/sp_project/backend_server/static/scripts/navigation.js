@@ -2,7 +2,8 @@ function generateNavbar() {
     setActiveNavbarItem()
     const nav = document.createElement('nav');
     nav.className = "navi navbar navbar-expand-sm";
-    nav.style.backgroundColor ="";
+    nav.style.backgroundColor ="#cac0a1";
+
     nav.innerHTML = `
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -16,10 +17,13 @@ function generateNavbar() {
             <a class="nav-link" href="/pages/weather_historic">Historic Weather</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/pages/energy_historic">Historic Energy-Generation</a>
+            <a class="nav-link" href="/pages/energy_historic">Historic Energy-Production</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/pages/model">Prediction Model</a>
+            <a class="nav-link" href="/pages/model">Model</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/pages/prediction">Prediction</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/pages/game">Game</a>

@@ -10,19 +10,13 @@ import bokeh.layouts
 import bokeh.embed
 import bokeh.io
 
-import sp_project.data_preparation.db_entsoe as entsoe_data
 
-
-df_energy_raw = await entsoe_data.extract_energy_data_raw()
-df_energy_daily = await entsoe_data.extract_energy_data_daily()
-
-
-def energy_grouped_bar_plot():
+def energy_grouped_bar_plot(result):
     fig, ax = plt.subplots()
 
     color = "#BBBBBB #F0E442 #D55E00 #009E73 #0072B2 #56B4E9".split()
 
-    avg_daily_production = df_energy_daily.iloc[:, :-1].groupby(df_energy_daily.index.year).mean()
+    avg_daily_production = result.iloc[:, :-1].groupby(result.index.year).mean()
     avg_daily_production.plot.bar(ax=ax, color=color)
 
     ax.set_ylabel('Average Energy Production [MW]')
@@ -32,14 +26,14 @@ def energy_grouped_bar_plot():
     return fig
 
 
-def energy_overview_plot():
-    raw_source = bokeh.models.ColumnDataSource(data=df_energy_raw)
-    day_source = bokeh.models.ColumnDataSource(data=df_energy_daily)
+def energy_overview_plot(raw_result, daily_result):
+    raw_source = bokeh.models.ColumnDataSource(data=raw_result)
+    day_source = bokeh.models.ColumnDataSource(data=daily_result)
 
     column_names = "nuclear solar wind water_reservoir water_river water_pump".split()
     colors = "#D55E00 #F0E442 #BBBBBB #009E73 #0072B2 #56B4E9".split()
 
-    middle = len(df_energy_raw) // 2
+    middle = len(raw_result) // 2
     selection_range = 500
 
     # Selected-Part-Plot
@@ -48,7 +42,7 @@ def energy_overview_plot():
         width=800,
         x_axis_type="datetime",
         x_axis_location="above",
-        x_range=(df_energy_raw.index[middle - selection_range], df_energy_raw.index[middle + selection_range]),
+        x_range=(raw_result.index[middle - selection_range], raw_result.index[middle + selection_range]),
     )
 
     p.yaxis.axis_label = 'Energy Production [MW]'
@@ -122,47 +116,48 @@ def energy_overview_plot():
     return fig
 
 
-def energy_yearly_pieplot(year):
+def energy_yearly_pieplot(result):
+    years = set(result.index.year)
+    for year in years:
+        df_energy_year = result[result.index.year == year]
 
-    df_energy_year = df_energy_daily[df_energy_daily.index.year == year]
+        x = round(df_energy_year.iloc[:, :-1].sum() / 1000, 2)
 
-    x = round(df_energy_year.iloc[:, :-1].sum() / 1000, 2)
+        data = pd.Series(x).reset_index(name='value').rename(columns={'index': 'country'})
+        data['angle'] = data['value'] / data['value'].sum() * 2 * math.pi
+        data['color'] = "#BBBBBB #F0E442 #D55E00 #009E73 #0072B2 #56B4E9".split()
 
-    data = pd.Series(x).reset_index(name='value').rename(columns={'index': 'country'})
-    data['angle'] = data['value'] / data['value'].sum() * 2 * math.pi
-    data['color'] = "#BBBBBB #F0E442 #D55E00 #009E73 #0072B2 #56B4E9".split()
+        p = bokeh.plotting.figure(
+            height=350,
+            title=f"Yearly Production by Energy-Type in GWh in {year}",
+            toolbar_location=None,
+            tools="hover",
+            tooltips="@country: @value",
+            x_range=(-0.5, 1.0),
+        )
 
-    p = bokeh.plotting.figure(
-        height=350,
-        title=f"Yearly Production by Energy-Type in GWh in {year}",
-        toolbar_location=None,
-        tools="hover",
-        tooltips="@country: @value",
-        x_range=(-0.5, 1.0),
-    )
+        p.wedge(
+            x=0,
+            y=1,
+            radius=0.4,
+            start_angle=bokeh.transform.cumsum('angle', include_zero=True),
+            end_angle=bokeh.transform.cumsum('angle'),
+            line_color="white",
+            fill_color='color',
+            legend_field='country',
+            source=data,
+        )
 
-    p.wedge(
-        x=0,
-        y=1,
-        radius=0.4,
-        start_angle=bokeh.transform.cumsum('angle', include_zero=True),
-        end_angle=bokeh.transform.cumsum('angle'),
-        line_color="white",
-        fill_color='color',
-        legend_field='country',
-        source=data,
-    )
+        p.axis.axis_label = None
+        p.axis.visible = False
+        p.grid.grid_line_color = None
 
-    p.axis.axis_label = None
-    p.axis.visible = False
-    p.grid.grid_line_color = None
+        pie_fig = bokeh.layouts.column(p)
 
-    pie_fig = bokeh.layouts.column(p)
-
-    return pie_fig
+        return pie_fig
 
 
-def energy_variable_pieplot(start_date, end_date):
+def energy_variable_pieplot(result, start_date, end_date):
     start = datetime.datetime(
         year=start_date.year,
         month=start_date.month,
@@ -175,7 +170,7 @@ def energy_variable_pieplot(start_date, end_date):
         day=end_date.day
     ).replace(tzinfo=datetime.timezone.utc)
 
-    df_energy = df_energy_daily.loc[start:end, :]
+    df_energy = result.loc[start:end, :]
 
     title = f"Production by Energy-Type in MWh from {start.date()} to {end.date()}"
 
