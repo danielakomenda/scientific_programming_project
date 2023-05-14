@@ -50,7 +50,7 @@ class OpenWeatherClient:
 class WeatherStation:
     """Handels a specific location defined by latitude and longitude"""
 
-    def __init__(self, client: OpenWeatherClient, lon: float, lat: float):
+    def __init__(self, client: OpenWeatherClient, *, lon: float, lat: float):
         """Constructor"""
         self._client = client
         self.lon = lon

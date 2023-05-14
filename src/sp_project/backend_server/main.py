@@ -3,27 +3,30 @@ import logging
 import sys
 import pickle
 
+import quart.flask_patch
+import flask_caching
+
 import quart
-from bokeh.resources import CDN
-from markupsafe import Markup
-import anyio
+import bokeh.resources
+import markupsafe
 import bokeh.embed
 
 from sp_project.data_collection.openweather_api_client import OpenWeatherClient
-
-from sp_project.data_preparation.db_entsoe import extract_energy_data_raw, extract_energy_data_daily
-from sp_project.data_preparation.db_openweather_historic import *
-
-from sp_project.data_visuals.energy_historic_plots import energy_grouped_bar_plot, energy_yearly_pieplot, \
-    energy_overview_plot
-from sp_project.data_visuals.energy_prediction_plots import *
-
 from sp_project.data_visuals.weather_historic_plots import weather_overview_plot
+from sp_project.data_preparation.db_entsoe import *
+from sp_project.data_preparation.db_openweather_historic import *
+from sp_project.data_visuals.energy_historic_plots import *
+from sp_project.data_visuals.energy_prediction_plots import *
 from sp_project.data_visuals.weather_prediction_plots import *
+
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
 app = quart.Quart(__name__)
+cache = flask_caching.Cache(config={'CACHE_TYPE': 'SimpleCache'})
+
+cache.init_app(app)
+
 
 app_state = AppState()
 
@@ -46,40 +49,27 @@ def run() -> None:
 
 @app.get('/')
 async def main_page():
-    return await quart.render_template("main.html", resources=Markup(CDN.render()))
+    return await quart.render_template("main.html", resources=markupsafe.Markup(bokeh.resources.CDN.render()))
 
 
 @app.get('/pages/<string:p>')
 async def web_pages(p):
-    return await quart.render_template(f"{p}.html", resources=Markup(CDN.render()))
-
-
-@app.get('/plot')
-async def plot():
-    async with await anyio.open_file(app.static_folder/"test.json", "rt", encoding="UTF-8") as fh:
-        data = await fh.read()
-
-    # answer from stackoverflow to add the content-type-headers from a document
-    response = app.response_class(
-        response=data,
-        status=200,
-        mimetype="application/json",
-    )
-    return response
+    return await quart.render_template(f"{p}.html", resources=markupsafe.Markup(bokeh.resources.CDN.render()))
 
 
 @app.get('/energy-historic-plot')
+@cache.cached()
 async def energy_historic():
     try:
         raw_result = await extract_energy_data_raw()
         daily_result = await extract_energy_data_daily()
 
-        energy_historic_grouped_barplot = energy_grouped_bar_plot(daily_result)
+        # energy_historic_grouped_barplot = energy_grouped_bar_plot(daily_result)
         energy_historic_plot = energy_overview_plot(raw_result=raw_result, daily_result=daily_result)
         energy_historic_pie = energy_yearly_pieplot(daily_result)
 
         data = json.dumps(dict(
-            #plot1=bokeh.embed.json_item(energy_historic_grouped_barplot),
+            # plot1=bokeh.embed.json_item(energy_historic_grouped_barplot),
             plot2=bokeh.embed.json_item(energy_historic_plot),
             plot3=bokeh.embed.json_item(energy_historic_pie),
         ))
@@ -88,7 +78,36 @@ async def energy_historic():
             status=200,
             mimetype="application/json",
         )
-        return response
+        return flask_caching.CachedResponse(
+            response=response,
+            timeout=86400,
+        )
+    except Exception as ex:
+        import traceback
+        return dict(
+            error=repr(ex),
+            traceback=traceback.format_exc(),
+        )
+
+
+@app.get('/weather-historic-plot')
+@cache.cached()
+async def weather_historic():
+    try:
+        result = await extract_data_daily()
+        weather_historic_plot = weather_overview_plot(result)
+        data = json.dumps(dict(
+            plot1=bokeh.embed.json_item(weather_historic_plot),
+        ))
+        response = app.response_class(
+            response=data,
+            status=200,
+            mimetype="application/json",
+        )
+        return flask_caching.CachedResponse(
+            response=response,
+            timeout=86400,
+        )
     except Exception as ex:
         import traceback
         return dict(
@@ -113,28 +132,6 @@ async def energy_predict():
         data = json.dumps(dict(
             energy_prediction_plot1=bokeh.embed.json_item(energy_prediction_plot),
             energy_prediction_plot2=bokeh.embed.json_item(energy_prediction_pie),
-        ))
-        response = app.response_class(
-            response=data,
-            status=200,
-            mimetype="application/json",
-        )
-        return response
-    except Exception as ex:
-        import traceback
-        return dict(
-            error=repr(ex),
-            traceback=traceback.format_exc(),
-        )
-
-
-@app.get('/weather-historic-plot')
-async def weather_historic():
-    try:
-        result = await extract_data_daily()
-        weather_historic_plot = weather_overview_plot(result)
-        data = json.dumps(dict(
-            plot1=bokeh.embed.json_item(weather_historic_plot),
         ))
         response = app.response_class(
             response=data,

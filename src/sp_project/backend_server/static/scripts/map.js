@@ -12,7 +12,7 @@ function setUpMap() {
         }
         $.get("/energy-prediction-plot", {lat:e.latlng.lat, lon:e.latlng.lng}, function( data ) {
           console.log( "Load was performed." );
-          const plots_div = $("#energy-prediction-plot");
+          const plots_div1 = $("#energy-prediction-plot");
           plots_div.empty();
           if(data.energy_prediction_plot1 !== undefined){
               Bokeh.embed.embed_item(data.energy_prediction_plot1, "energy-prediction-plot");
@@ -38,7 +38,7 @@ function setUpMap() {
     }
 
 
-    $.getJSON('/static/switzerland-boundary.geo.json').then(function(swissBoundary) {
+    $.getJSON('/switzerland-boundary.geo.json').then(function(swissBoundary) {
       var osm = L.TileLayer.boundaryCanvas("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         boundary: swissBoundary,
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, CH shape <a href="https://github.com/johan/world.geo.json">johan/word.geo.json</a>'

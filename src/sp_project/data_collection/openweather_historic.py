@@ -10,6 +10,7 @@ import anyio  # for parallel-processes
 from sp_project.data_collection.openweather_api_client import OpenWeatherClient
 
 
+# Name: (lon, lat)
 coordinates = {
     "grid00": (7.10, 46.22),
     "grid01": (7.66, 46.22),
