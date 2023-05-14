@@ -1,64 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-    {{ resources }}
+    {% extends "base.html" %}
+    <head>
+        {% block head %}{{ super() }}{% endblock %}
+    </head>
+    <body>
+        {% block nav_bar %}{{ super() }}{% endblock %}
+        {% block title %} Historic Weather-Data {% endblock %}
+        {% block main %}{{ super() }}{% endblock %}
 
-    <script src="{{ url_for('static', filename='scripts/navigation.js') }}"></script>
-    <script src="{{ url_for('static', filename='scripts/map.js') }}"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+        {% block info_text %}
+            On this page you can find the historic Weather-Data.
+            We displayed the average Temperature and Rain over the last two years.
+        {% endblock %}
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- Bootstrap JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</head>
-<body>
-    <script>
-        generateNavbar();
-        setActiveNavbarItem()
-    </script>
-
-<main>
-    <div class="container">
-        <div class="title">Historic Weather</div>
-        <div class="row">
-            <div class="col-12 col-sm-12">
-                <p class="info-text framed">
-                    On this page you can find the historic Weather-Data.
-                    We displayed the average Temperature and Rain over the last two years.
-                </p>
-            </div>
-        </div>
+        {% block content %}
         <div class="row">
             <div class="col-12 col-sm-12" id="weather-historic-plot1"></div>
         </div>
-
-    </div>
-</main>
-
-    <footer class="footer">
-        <div class="footer-text fat">Scientific Programming Project</div>
-        <div class="footer-text">Group: Daniela Komenda, Flavio Gottardo, Kevin Thiruchelvam</div>
-    </footer> 
-    
-    
-    <script type="module">
-      const response = await fetch('/weather-historic-plot')
-      const data = await response.json()
-
-      const plots_div = $("#plot1");
-      if(data.plot1 !== undefined){
-          Bokeh.embed.embed_item(data.plot1, "weather-historic-plot1");
-      } else {
-        plots_div.append("<h1>"+data.error+"</h1>");
-        plots_div.append("<pre>"+data.traceback+"</pre>");
-      }
-    </script>
+        {% endblock %}
 
 
-</body>
+        {% block footer %}{{ super() }}{% endblock %}
+
+        {% block scripts %}
+        <script type="module">
+          const response = await fetch('/Historic-Weather-Data')
+          const data = await response.json()
+
+          const plots_div = $("#Historic-Weather-Data");
+          if(data.plot1 !== undefined){
+              Bokeh.embed.embed_item(data.plot1, "weather-historic-plot1");
+          } else {
+            plots_div.append("<h1>"+data.error+"</h1>");
+            plots_div.append("<pre>"+data.traceback+"</pre>");
+          }
+        </script>
+        {% endblock %}
+    </body>
 </html>

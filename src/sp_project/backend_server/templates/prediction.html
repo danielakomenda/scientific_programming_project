@@ -1,31 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+{% extends "base.html" %}
+    <head>
+        {% block head %}{{ super() }}{% endblock %}
+    </head>
+
+    <body>
+        {% block nav_bar %}{{ super() }}{% endblock %}
+        {% block title %} Prediction {% endblock %}
+        {% block main %}{{ super() }}{% endblock %}
+
+        {% block info_text %}
+            On this page we will display the Weather-Prediction for a location and the Energy-Production-Prediction based on the Weather-Forecast.
+            Please choose a location by clicking on the map below.
+        {% endblock %}
+
+        {% block content %}
+            <div class="row">
+                <div class="col-6 col-sm-6 center framed" id="map"></div>
+            </div>
+            Check 1
+            <div class="row">
+                <div class="col-12 col-sm-12" id="weather-prediction-plot"></div>
+            </div>
+
+            Check 2
+            <div class="row">
+                <div class="col-12 col-sm-12" id="energy-prediction-plot"></div>
+            </div>
+
+        {% endblock %}
+
+
+        {% block footer %}{{ super() }}{% endblock %}
+
+        {% block scripts %}<script>setUpMap()</script>{% endblock %}
+    </body>
+</html>
+
+<!--
     <meta charset="UTF-8">
     <title>Document</title>
     {{ resources }}
 
-    <!-- Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
-    crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-    integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
-    crossorigin=""></script>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
     <script src="https://cdn.rawgit.com/aparshin/leaflet-boundary-canvas/f00b4d35/src/BoundaryCanvas.js"></script>
 
-    <!--Static Scripts and Styles-->
+
     <script src="{{ url_for('static', filename='scripts/navigation.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/map.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
 
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- Bootstrap JavaScript -->
+
     <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 
 </head>
 <body>
@@ -48,16 +81,24 @@
             <div class="row">
                 <div class="col-6 col-sm-6 center framed" id="map"></div>
             </div>
-
+            Check 1
             <div class="row">
                 <div class="col-12 col-sm-12" id="weather-prediction-plot"></div>
             </div>
+
+            Check 2
             <div class="row">
-                <div class="col-12 col-sm-12" id="energy-prediction-plot"></div>
+                <div class="col-12 col-sm-12" id="energy-prediction-plot1"></div>
             </div>
 
+            Check 3
+            <div class="row">
+                <div class="col-12 col-sm-12" id="energy-prediction-plot2"></div>
+            </div>
+            Check 4
+
         </div>
-    </main>   
+    </main>
 
     <footer class="footer">
         <div class="footer-text fat">Scientific Programming Project</div>
@@ -69,3 +110,5 @@
     </script>
 </body>
 </html>
+
+-->

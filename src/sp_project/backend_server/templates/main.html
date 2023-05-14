@@ -1,63 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-    {{ resources }}
+    {% extends "base.html" %}
+    <head>
+        {% block head %}{{ super() }}{% endblock %}
+    </head>
+    <body>
+        {% block nav_bar %}{{ super() }}{% endblock %}
+        {% block title %} Welcome to our Web-Application {% endblock %}
+        {% block main %}{{ super() }}{% endblock %}
 
-    <script src="{{ url_for('static', filename='scripts/navigation.js') }}"></script>
-    <script src="{{ url_for('static', filename='scripts/map.js') }}"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- Bootstrap JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</head>
-<body>
-    <script>
-        generateNavbar();
-        setActiveNavbarItem()
-    </script>
-
-
-    <main>
-        <div class="container">
-            <div class="title">Welcome to our Web-Application</div>
-            <div class="row">
-                <div class="col-12 col-sm-12">
-                    <p class="info-text">
+        {% block info_text %}
+        <div class="row">
+            <div class="col-12 col-sm-12">
+                <p class="info-text">
                     As part of our scientific programming module, our team completed a Python project that involved collecting and analyzing real-life weather and energy-production data in Switzerland.
                     We aimed to understand the relationship between energy-production and weather, with the ultimate goal of predicting future energy-production based on weather predictions.
-                    </p>
-                    <p class="info-text">
+                </p>
+                <p class="info-text">
                     On this Webapplication you can find our results, so please feel free to visit all the Subpages to see, what we worked on.
-                    </p>
-                
+                </p>
                 <p class="info-text">
                     In the navigation-bar, you can find graphics and interpretation about weather and energy-generation as well as a prediction fo future energy-generation based on the weather-prediction.
                     In the tab "Extras", you can find something fun, that has nothing to do with the rest of the Project.
-                    </p>
-                </div>
+                </p>
             </div>
         </div>
-    </main>    
+        {% endblock %}
 
-    <footer class="footer">
-        <div class="footer-text fat">Scientific Programming Project</div>
-        <div class="footer-text">Group: Daniela Komenda, Flavio Gottardo, Kevin Thiruchelvam</div>
-    </footer>
+        {% block content %}
+        {% endblock %}
 
+        {% block footer %}{{ super() }}{% endblock %}
 
-   <script type="module">
-        const response = await fetch('/plot')
-        const item = await response.json()
-        Bokeh.embed.embed_item(item, "plots")
-    </script>
-
-</body>
+    </body>
 </html>
-
-

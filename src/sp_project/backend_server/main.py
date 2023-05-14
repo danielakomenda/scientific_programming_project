@@ -57,7 +57,7 @@ async def web_pages(p):
     return await quart.render_template(f"{p}.html", resources=markupsafe.Markup(bokeh.resources.CDN.render()))
 
 
-@app.get('/energy-historic-plot')
+@app.get('/Historic-Energy-Production')
 @cache.cached()
 async def energy_historic():
     try:
@@ -90,7 +90,7 @@ async def energy_historic():
         )
 
 
-@app.get('/weather-historic-plot')
+@app.get('/Historic-Weather-Data')
 @cache.cached()
 async def weather_historic():
     try:
@@ -116,7 +116,7 @@ async def weather_historic():
         )
 
 
-@app.get('/energy-prediction-plot')
+@app.get('/Energy-Prediction')
 async def energy_predict():
     try:
         lat = float(quart.request.args["lat"])
@@ -147,7 +147,7 @@ async def energy_predict():
         )
 
 
-@app.get('/weather-prediction-plot')
+@app.get('/Weather-Prediction')
 async def weather_predict():
     try:
         lat = float(quart.request.args["lat"])

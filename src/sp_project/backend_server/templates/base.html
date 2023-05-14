@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    <title>Scientific Programming</title>
+    {{ resources }}
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+    <script src="https://cdn.rawgit.com/aparshin/leaflet-boundary-canvas/f00b4d35/src/BoundaryCanvas.js"></script>
+
+    <!-- Personal Scripts & Styles -->
+    <script src="{{ url_for('static', filename='scripts/navigation.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/map.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Bootstrap JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    {% endblock %}
+
+</head>
+    <body>
+    {% block navbar %}
+        <script>
+            generateNavbar();
+            setActiveNavbarItem()
+        </script>
+    {% endblock %}
+        <div class="title">
+            {% block title %} Title {% endblock %}
+        </div>
+
+        {% block main %}
+        <main>
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        {% block info_text %}<p class="info-text">Info-Text</p>{% endblock %}
+                    </div>
+                </div>
+                {% block content %} Content {% endblock %}
+            </div>
+        </main>
+        {% endblock %}
+
+        {% block footer %}
+        <footer class="footer">
+            <div class="footer-text fat">Scientific Programming Project</div>
+            <div class="footer-text">Group: Daniela Komenda, Flavio Gottardo, Kevin Thiruchelvam</div>
+        </footer>
+        {% endblock %}
+
+        {% block scripts %} Scripts {% endblock %}
+    </body>
+</html>
+
+

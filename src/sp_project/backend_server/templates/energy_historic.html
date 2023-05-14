@@ -1,67 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Document</title>
-    {{ resources }}
+    {% extends "base.html" %}
+    <head>
+        {% block head %}{{ super() }}{% endblock %}
+    </head>
+    <body>
+        {% block nav_bar %}{{ super() }}{% endblock %}
+        {% block title %} Historic Energy-Production {% endblock %}
+        {% block main %}{{ super() }}{% endblock%}
 
-    <!--Static Scripts and Styles-->
-    <script src="{{ url_for('static', filename='scripts/navigation.js') }}"></script>
-    <script src="{{ url_for('static', filename='scripts/map.js') }}"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- Bootstrap JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</head>
-<body>
-    <script>
-        generateNavbar();
-        setActiveNavbarItem()
-    </script>
-
-    <main>
-        <div class="container">
-            <div class="title">Historic Energy-Generation</div>
-            <div class="row">
-                <div class="col-12 col-sm-12">
-                    <p class="info-text framed">
+        {% block info_text %}
                     On this page you can find the historic Energy-Production for the different Energy-Types.
                     In the Overview-Plot you can see all data of the last two years stacked.
                     Like this you can as well see the total Energy-Production.
-
                     In the Pie-Chart you can see the Ratio between the different Energy-Production-Types.
-                    </p>
-                </div>
-            </div>
+        {% endblock%}
+
+        {% block content %}
             <div class="row">
                 <div class="col-12 col-sm-12" id="energy-historic-plot1"></div>
             </div>
-        </div>
-    </main>    
+        {% endblock %}
 
-    <footer class="footer">
-        <div class="footer-text fat">Scientific Programming Project</div>
-        <div class="footer-text">Group: Daniela Komenda, Flavio Gottardo, Kevin Thiruchelvam</div>
-    </footer>
-    
+        {% block footer %}{{ super() }}{% endblock %}
 
-    <script type="module">
-      const response = await fetch('/energy-historic-plot')
-      const data = await response.json()
+        {% block scripts %}
+        <script type="module">
+          const response = await fetch('/Historic-Energy-Production')
+          const data = await response.json()
 
-      const plots_div = $("#plot1");
-      if(data.plot2 !== undefined){
-          Bokeh.embed.embed_item(data.plot2, "energy-historic-plot1");
-          Bokeh.embed.embed_item(data.plot3, "energy-historic-plot1");
-      } else {
-        plots_div.append("<h1>"+data.error+"</h1>");
-        plots_div.append("<pre>"+data.traceback+"</pre>");
-      }
-    </script>
-    
-</body>
+          const plots_div = $("#Historic-Energy-Production");
+          if(data.plot2 !== undefined){
+              Bokeh.embed.embed_item(data.plot2, "energy-historic-plot1");
+              Bokeh.embed.embed_item(data.plot3, "energy-historic-plot1");
+          } else {
+            plots_div.append("<h1>"+data.error+"</h1>");
+            plots_div.append("<pre>"+data.traceback+"</pre>");
+          }
+        </script>
+        {% endblock %}
+    </body>
 </html>
