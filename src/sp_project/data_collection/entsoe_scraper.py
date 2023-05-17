@@ -2,6 +2,7 @@ import asyncio
 import re  # regular-expression
 import json
 import datetime
+import os
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
@@ -10,8 +11,6 @@ import bs4  # beautifulsoup
 import pandas as pd
 import tqdm
 
-
-db_access = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
 
 
 async def get_datapoints_from_entsoe(country, date):
@@ -112,10 +111,8 @@ async def run_the_program(collection, country, start_date, end_date):
             raise
 
 
-
-
 def main():
-    uri = db_access
+    uri = os.environ['MONGODB_URI']
     db_client = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
     db = db_client.data
     collection = db.entsoe

@@ -111,7 +111,7 @@ async def extract_heatingdemand() -> pd.DataFrame:
 
 
 async def extract_windpower() -> pd.DataFrame:
-    """Extract the daily average of wind-speed**2, which is the equivalent of wind-power"""
+    """Extract the daily average of wind-speed**3, which is the equivalent of wind-power"""
     
     collection = get_global_db_client().wetter2
     
@@ -134,7 +134,7 @@ async def extract_windpower() -> pd.DataFrame:
                                 '$divide': [
                                     "$wind_kmh", 3.6
                                 ]
-                            }, 2]
+                            }, 3]
                     }
                 }
             }

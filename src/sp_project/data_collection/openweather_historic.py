@@ -1,5 +1,6 @@
 import datetime
 import asyncio
+import os
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
@@ -130,8 +131,8 @@ async def run_the_program(ow_client, collection, locations: dict[str, tuple[floa
 
 
 async def main():
-    api_key_ow = "***REMOVED***"
-    uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
+    api_key_ow = os.environ["OPENWEATHER_API_TOKEN"]
+    uri = os.environ['MONGODB_URI']
 
     DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
     db = DBclient.data

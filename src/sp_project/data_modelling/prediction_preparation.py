@@ -28,7 +28,7 @@ async def extract_predictions_daily(app_state: AppState, *, lon, lat):
 def prepare_prediction_features(data, lat):
     input_features = pd.DataFrame(dict(
         heating_demand=np.maximum(0, data.temperature - 14),
-        windpower=data.wind_speed ** 2,
+        windpower=data.wind_speed ** 3,
         rain=data.rain,
         solar_power=total_solarpower_below_clouds(
             data,

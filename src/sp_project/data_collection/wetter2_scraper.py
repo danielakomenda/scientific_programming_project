@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import os
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
@@ -270,7 +271,7 @@ async def run_the_program(collection, locations, year, start_date, end_date):
                     
 
 async def main():
-    uri = "mongodb+srv://scientificprogramming:***REMOVED***@scientificprogramming.nzfrli0.mongodb.net/test"
+    uri = os.environ['MONGODB_URI']
     DBclient = AsyncIOMotorClient(uri, server_api=ServerApi('1'))
     db = DBclient.data
     collection = db.wetter2

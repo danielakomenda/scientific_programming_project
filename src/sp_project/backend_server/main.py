@@ -2,6 +2,7 @@ import json
 import logging
 import sys
 import pickle
+import os
 
 import quart.flask_patch
 import flask_caching
@@ -37,7 +38,7 @@ async def app_lifecycle():
     with open(app.root_path/"assets/prediction-model.pickle", "rb") as fh:
         app_state.model = pickle.load(fh)
     async with OpenWeatherClient(
-        api_key="***REMOVED***",
+        api_key=os.environ["OPENWEATHER_API_TOKEN"],
     ) as ow_client:
         app_state.ow_client = ow_client
         yield

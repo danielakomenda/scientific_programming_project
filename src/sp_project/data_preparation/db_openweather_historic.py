@@ -193,7 +193,7 @@ async def extract_windpower() -> pd.DataFrame:
                 'windpower': {
                     '$avg': {
                         '$pow': [
-                            '$wind_speed', 2
+                            '$wind_speed', 3
                         ]
                     }
                 }
