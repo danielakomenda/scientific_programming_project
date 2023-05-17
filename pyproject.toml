@@ -1,3 +1,52 @@
+[project]
+name = "sp-project"
+dynamic = ["version"]
+authors = [
+    {name="Daniela Komenda", email="d.komenda@hotmail.com"},
+]
+description = "Scientific Programming Project"
+license = {text="MIT"}
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3"
+]
+dependencies = [
+    "httpx",
+    "anyio",
+    "motor",
+    "pandas",
+    "tqdm",
+    "pymongo",
+    "bs4",
+]
+
+
+[project.optional-dependencies]
+web-server = [
+    "quart",
+    "bokeh",
+    "Flask-Caching",
+    "scikit-learn",
+    "matplotlib",
+]
+
+notebooks = [
+    "pyyaml",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["sp_project*"]
+
+[tool.setuptools-git-versioning]
+enabled = true
+version_file = "VERSION"
+count_commits_from_version_file = true
+
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ["setuptools>=41", "setuptools-scm", "wheel", "setuptools-git-versioning<2"]
 build-backend = "setuptools.build_meta"
+
