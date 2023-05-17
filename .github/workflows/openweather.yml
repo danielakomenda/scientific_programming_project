@@ -7,7 +7,10 @@ on:
 jobs: 
   InsertWeatherDataToDB:
     runs-on: ubuntu-latest
-    steps: 
+    env:
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      OPENWEATHER_API_TOKEN: ${{ secrets.OPENWEATHER_API_TOKEN }}
+    steps:
       - name: Check out repository code
         uses: actions/checkout@v3
       - uses: actions/setup-python@v4
