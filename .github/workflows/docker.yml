@@ -79,6 +79,7 @@ jobs:
       - id: deploy
         uses: google-github-actions/deploy-cloudrun@v1
         with:
-          service: /apis/serving.knative.dev/v1/namespaces/555391416068/services/webserver
+          service: webserver
+          region: europe-north1
           image: europe-north1-docker.pkg.dev/possible-coast-386219/docker/webserver:${{ github.sha }}
 
