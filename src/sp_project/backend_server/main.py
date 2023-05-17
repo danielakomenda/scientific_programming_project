@@ -50,12 +50,16 @@ def run() -> None:
 
 @app.get('/')
 async def main_page():
-    return await quart.render_template("main.html", resources=markupsafe.Markup(bokeh.resources.CDN.render()))
+    return await web_pages('main')
 
 
 @app.get('/pages/<string:p>')
 async def web_pages(p):
-    return await quart.render_template(f"{p}.html", resources=markupsafe.Markup(bokeh.resources.CDN.render()))
+    return await quart.render_template(
+        f"{p}.html",
+        resources=markupsafe.Markup(bokeh.resources.CDN.render()),
+        version="version 1.0",
+    )
 
 
 @app.get('/Historic-Energy-Production')
