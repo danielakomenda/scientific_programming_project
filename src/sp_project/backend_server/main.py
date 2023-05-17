@@ -19,7 +19,7 @@ from sp_project.data_preparation.db_openweather_historic import *
 from sp_project.data_visuals.energy_historic_plots import *
 from sp_project.data_visuals.energy_prediction_plots import *
 from sp_project.data_visuals.weather_prediction_plots import *
-
+from sp_project.db_client import get_global_db_client
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
@@ -62,8 +62,8 @@ async def web_pages(p):
 @cache.cached()
 async def energy_historic():
     try:
-        raw_result = await extract_energy_data_raw()
-        daily_result = await extract_energy_data_daily()
+        raw_result = await extract_energy_data_raw(app_state)
+        daily_result = await extract_energy_data_daily(app_state)
 
         # energy_historic_grouped_barplot = energy_grouped_bar_plot(daily_result)
         energy_historic_plot = energy_overview_plot(raw_result=raw_result, daily_result=daily_result)
@@ -95,7 +95,7 @@ async def energy_historic():
 @cache.cached()
 async def weather_historic():
     try:
-        result = await extract_data_daily()
+        result = await extract_data_daily(app_state)
         weather_historic_plot = weather_overview_plot(result)
         data = json.dumps(dict(
             plot1=bokeh.embed.json_item(weather_historic_plot),

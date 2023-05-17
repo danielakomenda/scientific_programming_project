@@ -1,12 +1,12 @@
 import pandas as pd
 
-from .db_client import get_global_db_client
+from sp_project.app_state import AppState
 
 
-async def extract_data_daily() -> pd.DataFrame:
+async def extract_data_daily(app_state: AppState) -> pd.DataFrame:
     """Extract the daily averages of all the interesting datapoints including hours of daylight"""
     
-    collection = get_global_db_client().openweather
+    collection = app_state.db_client.openweather
 
     pipeline = [
         {
@@ -106,10 +106,10 @@ async def extract_data_daily() -> pd.DataFrame:
     return df
 
 
-async def extract_heatingdemand() -> pd.DataFrame:
+async def extract_heatingdemand(app_state: AppState) -> pd.DataFrame:
     """Extract the daily average of the negative deviation of 14°C = 288°K"""
     
-    collection = get_global_db_client().openweather
+    collection = app_state.db_client.openweather
 
     pipeline = [
         {
@@ -173,10 +173,10 @@ async def extract_heatingdemand() -> pd.DataFrame:
     return df
 
 
-async def extract_windpower() -> pd.DataFrame:
+async def extract_windpower(app_state: AppState) -> pd.DataFrame:
     """Extract the daily average of wind-speed**2, which is the equivalent of wind-power"""
     
-    collection = get_global_db_client().openweather
+    collection = app_state.db_client.openweather
     
     pipeline = [
         {

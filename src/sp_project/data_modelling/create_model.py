@@ -7,10 +7,10 @@ import sp_project.data_preparation.db_wetter2 as wetter2_data
 from sp_project.data_preparation.solar_power import total_solarpower_below_clouds
 
 
-async def prepare_input_features_daily():
-    daily_data = await wetter2_data.extract_data_daily()
-    heating_demand = await wetter2_data.extract_heatingdemand()
-    windpower = await wetter2_data.extract_windpower()
+async def prepare_input_features_daily(app_state):
+    daily_data = await wetter2_data.extract_data_daily(app_state)
+    heating_demand = await wetter2_data.extract_heatingdemand(app_state)
+    windpower = await wetter2_data.extract_windpower(app_state)
     solar_power = total_solarpower_below_clouds(daily_data, 47)
 
     input_features = [heating_demand, windpower, daily_data.rain, solar_power.rename("solar_power")]
@@ -18,23 +18,23 @@ async def prepare_input_features_daily():
     return input_features
 
 
-async def prepare_target_features_daily():
-    return await entsoe_data.extract_energy_data_daily()
+async def prepare_target_features_daily(app_state):
+    return await entsoe_data.extract_energy_data_daily(app_state)
 
 
-async def prepare_input_features_weekly():
-    input_daily = await prepare_input_features_daily()
+async def prepare_input_features_weekly(app_state):
+    input_daily = await prepare_input_features_daily(app_state)
     return pd.concat(input_daily, axis="columns").resample('W').mean()
 
 
-async def prepare_target_features_weekly():
-    target_features = await entsoe_data.extract_energy_data_daily()
+async def prepare_target_features_weekly(app_state):
+    target_features = await entsoe_data.extract_energy_data_daily(app_state)
     return target_features.resample('W').mean()
 
 
-async def pls_regression_weekly():
-    input_features_weekly = await prepare_input_features_weekly()
-    target_features_weekly = await prepare_target_features_weekly()
+async def pls_regression_weekly(app_state):
+    input_features_weekly = await prepare_input_features_weekly(app_state)
+    target_features_weekly = await prepare_target_features_weekly(app_state)
 
     valid_input_features_weekly = input_features_weekly.dropna(axis="index", how='any').index
     valid_target_features_weekly = target_features_weekly.dropna(axis="index", how='any').index

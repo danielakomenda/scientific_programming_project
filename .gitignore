@@ -1,8 +1,11 @@
 __pycache__/
 .ipynb_checkpoints/
 *.egg-info/
+build/
+dist/
 .DS_Store
 .idea
 Scientific Programming - Project-Overview.drawio
 Failed-Logs.md
 
+credentials.yaml

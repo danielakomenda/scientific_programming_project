@@ -1,6 +1,6 @@
 import pandas as pd
 
-from .db_client import get_global_db_client
+from sp_project.app_state import AppState
 
 
 db_field_projection = {
@@ -13,10 +13,10 @@ db_field_projection = {
 }
 
 
-async def extract_energy_data_daily() -> pd.DataFrame:
+async def extract_energy_data_daily(app_state: AppState) -> pd.DataFrame:
     """Extract the daily average of all the data"""
 
-    collection = get_global_db_client().entsoe
+    collection = app_state.db_client.entsoe
 
     pipeline = [{
         '$addFields': {
@@ -47,10 +47,10 @@ async def extract_energy_data_daily() -> pd.DataFrame:
     return df
 
 
-async def extract_energy_data_raw() -> pd.DataFrame:
+async def extract_energy_data_raw(app_state: AppState) -> pd.DataFrame:
     """Extract all the data"""
 
-    collection = get_global_db_client().entsoe
+    collection = app_state.db_client.entsoe
     
     projection = {
         '_id': False,
