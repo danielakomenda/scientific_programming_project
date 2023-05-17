@@ -20,6 +20,7 @@ from sp_project.data_visuals.energy_historic_plots import *
 from sp_project.data_visuals.energy_prediction_plots import *
 from sp_project.data_visuals.weather_prediction_plots import *
 from sp_project.db_client import get_global_db_client
+from sp_project.version import __version__
 
 logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
 
@@ -58,7 +59,7 @@ async def web_pages(p):
     return await quart.render_template(
         f"{p}.html",
         resources=markupsafe.Markup(bokeh.resources.CDN.render()),
-        version="version 1.0",
+        version=f"Version {__version__}",
     )
 
 
