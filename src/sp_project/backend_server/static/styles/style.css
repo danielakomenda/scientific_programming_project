@@ -1,5 +1,5 @@
 /*---------------------------------------------*/
-/* SPACE-Styles */
+/* GENERAL-Styles */
 /*---------------------------------------------*/
 
 html {
@@ -39,27 +39,6 @@ body {
   padding: 0 20px;
 }
 
-.container {
-    margin-top:20px;
-    margin-bottom: 20px;
-    position: center;
-    border:0px;
-    background-color:#ffffff;
-}
-
-.framed {
-    border-color: navy;
-    border-style:outset;
-    border-width: 0.5 px;
-    background-color: azure;
-}
-
-.box {
-    border-color: #6495ED;
-    border-style: ridge;
-    border-width: 0.1 px;
-    background-color: azure;
-}
 
 
 /*---------------------------------------------*/
@@ -143,9 +122,83 @@ body {
     margin-right: 10px;
 }
 
-.plot, .table, .bk-Column  {
-    display: block;
+
+/*---------------------------------------------*/
+/* PLOT- & TABLE-Styles */
+/*---------------------------------------------*/
+
+.container {
+    margin-top:20px;
+    margin-bottom: 20px;
+    position: center;
+    border:0px;
+    background-color:floralwhite;
+    border-radius:2px;
+}
+
+
+.plot, .bk-Column {
+    display: center;
     margin-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
+    overflow-y: scroll;
+}
+
+.box {
+    display: center;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.framed {
+    border-color: navy;
+    border-style:outset;
+    border-width: 0.5 px;
+    padding: 8px;
+    background-color: azure;
+}
+
+.dataframe {
+    background-color: white;
+    max-height: 400px; /* Adjust the maximum height as needed */
+    overflow-y: scroll; /* Enable vertical scrolling */
+    width: 100%; /* Set the table width to 100% of its container */
+    table-layout: fixed; /* Fix the table layout */
+    border: 2px solid navy; /* Add a border around each cell */
+    padding: 8px; /* Adjust the padding as needed */
+}
+
+.table td, .table th{
+    text-align: right;
+    padding: 0.75rem;
+    vertical-align: top;
+    horizontal-align: center;
+    border: 1px solid navy;
+}
+
+.table th {
+    background-color: aliceblue;
+    border-bottom: 2px solid navy;
+}
+
+#modeltest, #regression {
+    background-color: white;
+    overflow-y: scroll; /* Enable vertical scrolling */
+    max-height: auto; /* Adjust the maximum height as needed */
+    overflow-y: scroll; /* Enable vertical scrolling */
+    width: 100%; /* Set the table width to 100% of its container */
+    table-layout: fixed; /* Fix the table layout */
+    border: 2px solid navy; /* Add a border around each cell */
+}
+
+#coordinates {
+    display: flex;
+    justify-content: center; /* Center the image horizontally */
+    align-items: center; /* Center the image vertically */
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
 }

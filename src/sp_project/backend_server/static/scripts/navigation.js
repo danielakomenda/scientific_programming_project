@@ -57,3 +57,17 @@ function setActiveNavbarItem() {
       }
     });
   }
+
+function setVersionNumber(){
+        window.onload = function() {
+            // Get the version number element by its id
+            var versionElement = document.getElementById("version");
+
+            // Extract the first four numbers from the version number string
+            var versionNumber = versionElement.innerHTML;
+            var shortenedVersion = versionNumber.substring(0, versionNumber.indexOf(".", versionNumber.indexOf(".") + 1) + 2);
+
+            // Update the version number element with the shortened version
+            versionElement.innerHTML = shortenedVersion;
+        };
+}

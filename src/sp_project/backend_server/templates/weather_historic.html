@@ -26,13 +26,13 @@
             With those coordinates we did API-calls from the <a href="https://openweathermap.org">openweathermaps.org-API</a>.
             But due to a mistake in our code, we wasted a lot of API-calls with the wrong coordinates, so in the end, we decided to find another datasource.
         </p>
-            <img class="plot" src="../../static/pictures/coordinates.png" alt="coordinates">
+            <img id="coordinates" class="plot" src="../../static/pictures/coordinates.png" alt="coordinates">
 
         <p class="info-text">
             The data-source we used for the historic weather originates from <a href="wetter2.com">wetter2.com</a>a> and includes different locations of different parts of Switzerland.
             In our database we stored historic weather-data of the last two years for the following locations:
         </p>
-        <div class="box">
+        <div class="framed box">
             Aarau, Adelboden, Amriswil, Andermatt, Appenzell, Ascona, Basel, Bellinzona, Bern, Biel, Brienz, Bulle, Chur, Davos, Delemont, Einsiedeln, Emmen, Fortunau, Frauenfeld, Fribourg, Geneva, Glarus, Grindelwald, Ilanz, Interlaken, Kandersteg, Kreuzlingen, La Chaux De Fonds, Laax, Lausanne, Lauterbrunnen, Lenzerheide, Leukerbad, Locarno, Lucerne, Lugano, Martigny, Melide, Montreux, Murren, Murten, Nendaz, Neuchatel, Orselina, Payerne, Piazzogna, Pontresina, Poschiavo, Rapperswil, Romanshorn, Saas_Fee, Samaden, Samnaun, Sarnen, Savognin, Schaffhausen, Schwarzsee, Sion, Solothurn, St_Gallen, Stein_Am_Rhein, Tenero, Thun, Trient, Verbier, Vevey, Veysonnaz, Visp, Wengen, Winterthur, Zermatt, Zweisimmen, Zurich
         </div>
         {% endblock %}
