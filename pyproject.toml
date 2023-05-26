@@ -39,10 +39,13 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["sp_project"]
+
+include = ["sp_project*"]
 
 [tool.setuptools-git-versioning]
 enabled = true
+version_file = "VERSION"
+count_commits_from_version_file = true
 
 [build-system]
 requires = ["setuptools>=41", "setuptools-scm", "wheel", "setuptools-git-versioning<2"]
