@@ -11,6 +11,7 @@ import quart
 import bokeh.resources
 import markupsafe
 import bokeh.embed
+import pandas
 
 from sp_project.data_collection.openweather_api_client import OpenWeatherClient
 from sp_project.data_visuals.weather_historic_plots import weather_overview_plot
@@ -62,6 +63,25 @@ async def web_pages(p):
         version=f"Version {__version__}",
     )
 
+@app.get('/pages/model')
+async def weather_features():
+    weather_table = pd.read_csv(app.root_path/"assets/weatherfeatures.csv").to_html()
+    energy_table = pd.read_csv(app.root_path / "assets/energyfeatures.csv").to_html()
+    coefficients_table = pd.read_csv(app.root_path / "assets/regression_coefficients.csv").to_html()
+    x_weights_table = pd.read_csv(app.root_path / "assets/x_weights.csv").to_html()
+    y_weights_table = pd.read_csv(app.root_path / "assets/y_weights.csv").to_html()
+
+
+    return await quart.render_template(
+        "model.html",
+        resources=markupsafe.Markup(bokeh.resources.CDN.render()),
+        version=f"Version {__version__}",
+        weather_table_html=markupsafe.Markup(weather_table),
+        energy_table_html=markupsafe.Markup(energy_table),
+        coefficients_table_html=markupsafe.Markup(coefficients_table),
+        x_weights_table_html=markupsafe.Markup(x_weights_table),
+        y_weights_table_html=markupsafe.Markup(y_weights_table),
+    )
 
 @app.get('/Historic-Energy-Production')
 @cache.cached()

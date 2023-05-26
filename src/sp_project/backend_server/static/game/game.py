@@ -126,7 +126,7 @@ class Sprite(Rect):
         self.image = image
 
     def draw(self, drawing_context):
-        drawing_context.drawImage(self.image, int(round(self.left)), int(round(self.top)))  # Java-Script-Canvas2D-Methode
+        drawing_context.drawImage(self.image, int(round(self.left)), int(round(self.top)))  # JS-Canvas2D-Methode
 
 
 class GameRunner:
@@ -214,7 +214,7 @@ class GameRunner:
         self.character.draw(context)
         del context
 
-        for t in range(3,0,-1):
+        for t in range(3, 0, -1):
             self.info.write(f"Game starts in {t} seconds")
             await asyncio.sleep(1)
 

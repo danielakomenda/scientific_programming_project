@@ -6,9 +6,7 @@ import bokeh.palettes
 import bokeh.transform
 import bokeh.embed
 
-from sp_project.data_modelling.prediction_preparation import *
-from sp_project.notebook_tools import default_clients
-import sp_project.app_state
+from sp_project.data_preparation.prediction_preparation import *
 
 
 def weather_prediction_interactive_plot(result):

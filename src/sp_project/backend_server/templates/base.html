@@ -39,11 +39,6 @@
         {% block main %}
         <main>
             <div class="container">
-                <div class="row">
-                    <div class="col-12 col-sm-12">
-                        {% block info_text %}<p class="info-text">Info-Text</p>{% endblock %}
-                    </div>
-                </div>
                 {% block content %} Content {% endblock %}
             </div>
         </main>
@@ -51,9 +46,9 @@
 
         {% block footer %}
         <footer class="footer">
-            <div class="footer-text fat">Scientific Programming Project</div>
+            <div class="footer-text-title">Scientific Programming Project</div>
             <div class="footer-text">Group: Daniela Komenda, Flavio Gottardo, Kevin Thiruchelvam</div>
-            <div class="footer-text right">{{version}}</div>
+            <div class="version-text">{{version}}</div>
         </footer>
         {% endblock %}
 

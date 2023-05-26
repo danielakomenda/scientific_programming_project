@@ -9,25 +9,21 @@
         {% block title %} Welcome to our Web-Application {% endblock %}
         {% block main %}{{ super() }}{% endblock %}
 
-        {% block info_text %}
-        <div class="row">
-            <div class="col-12 col-sm-12">
-                <p class="info-text">
-                    As part of our scientific programming module, our team completed a Python project that involved collecting and analyzing real-life weather and energy-production data in Switzerland.
-                    We aimed to understand the relationship between energy-production and weather, with the ultimate goal of predicting future energy-production based on weather predictions.
-                </p>
-                <p class="info-text">
-                    On this Webapplication you can find our results, so please feel free to visit all the Subpages to see, what we worked on.
-                </p>
-                <p class="info-text">
-                    In the navigation-bar, you can find graphics and interpretation about weather and energy-generation as well as a prediction fo future energy-generation based on the weather-prediction.
-                    In the tab "Extras", you can find something fun, that has nothing to do with the rest of the Project.
-                </p>
-            </div>
-        </div>
-        {% endblock %}
 
         {% block content %}
+        <p class="info-text">
+            As part of our Module "Scientific Programming" we completed a Python project that involved collecting and analyzing real-life weather and energy-production data in Switzerland.
+        </p>
+        <p class="info-text">
+            We aimed to understand the relationship between energy-production and weather, with the ultimate goal of predicting future energy-production based on weather predictions.
+        </p>
+        <p class="info-text">
+            On this Webapplication you can find our results, so please feel free to look around.
+            In the Navigation-bar, you can find all the relevant Sub-Pages.
+        </p>
+        <p class="info-text">
+            In the tab "Extras", we included a little Easter-Egg, that has nothing to do with the project, but is sligthly related to Weather and Energy-
+        </p>
         {% endblock %}
 
         {% block footer %}{{ super() }}{% endblock %}
